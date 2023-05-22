@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'styles/Style.dart';
 
 void main() {
   runApp(MyApp());
@@ -40,16 +41,52 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
         child: Container(
-          color: Colors.black12,
+          //TODO : modifier couleur
+          color: Colors.deepPurple[300],
           child: ListView(
             children: [
-              DrawerHeader(
-                  child: Icon(
-                    Icons.home,
-                    size: 35,
-                  ),
-              )
+              Container(
 
+                child: DrawerHeader(
+                    child: Center(
+                      child: Text(
+                        'ACCEUIL',
+                        style: TextStyle(fontSize: 25),
+                      )
+                    )
+                ),
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.add,
+                  size: 40,
+                  shadows: [],
+                ),
+                title: Text(
+                  'Ajouter',
+                  style: TextStyle(fontSize: 18),
+                ),
+                onTap: () {
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                    Icons.edit
+                ),
+                title: Text(
+                    'Modifier',
+                    style: TextStyle(fontSize: 18)
+                ),
+              ),
+              ListTile(
+                leading: Icon(
+                    Icons.delete
+                ),
+                title: Text(
+                    'Supprimer',
+                    style: TextStyle(fontSize: 18)
+                ),
+              )
             ],
           ),
         ),
