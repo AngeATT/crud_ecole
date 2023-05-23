@@ -15,6 +15,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  int _selectedMenuParcour = 0;
+  int _selectedMenuEleve = 0;
+
   int _selectedMenu = 0;
 
   static List <List<Widget>> pages = <List<Widget>>[ //gere laffichage des menus
@@ -22,17 +25,32 @@ class _MyHomePageState extends State<MyHomePage> {
     [ModifierParcour(),ModifierEleve()],
     [SupprimerParcour(),SupprimerEleve()],
     [AfficherParcour(),AfficherEleve()]
-
   ];
+
+  static List<Widget> pagesParcour = <Widget>[
+    AjouterParcour(),ModifierParcour(),SupprimerEleve(),AfficherParcour()
+  ];
+  static List<Widget> pagesEleve = <Widget>[
+    AjouterEleve(),ModifierEleve(),SupprimerEleve(),AfficherEleve()
+  ];
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
+  void selectMenu(int menuChoisi){
+    if (_selectedIndex == 0 ){
+      _selectedMenuParcour = menuChoisi;
+    }else{
+      _selectedMenuEleve = menuChoisi;
+    }
+  }
+
   void _onMenuTapped(int indexMenu){
     setState(() {
-      _selectedMenu = indexMenu;
+      selectMenu(indexMenu);
     });
     Navigator.pop(context);
   }
@@ -114,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      body: _getPage(_selectedMenu,_selectedIndex),
+      body: _getPage(_selectedMenuParcour,_selectedMenuEleve,_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -132,12 +150,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _getPage(int indexMenu,int index) {
-    switch (index) {
+  Widget _getPage(int menuParcour,int menuEleve, int navBarChoisie) {
+    switch (navBarChoisie) {
       case 0:
-        return pages[indexMenu][0];
+        return pagesParcour[menuParcour];
       case 1:
-        return pages[indexMenu][1];
+        return pagesEleve[menuEleve];
       default:
         return Center(child: Text('Page inconnue'));
     }
