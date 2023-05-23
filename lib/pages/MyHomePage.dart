@@ -20,31 +20,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _selectedMenu = 0;
 
-  static List <List<Widget>> pages = <List<Widget>>[ //gere laffichage des menus
-    [AjouterParcour(),AjouterEleve()],
-    [ModifierParcour(),ModifierEleve()],
-    [SupprimerParcour(),SupprimerEleve()],
-    [AfficherParcour(),AfficherEleve()]
+
+  static List<Widget> allPages = <Widget>[
+    AjouterParcour(),ModifierParcour(),SupprimerParcour(),AfficherParcour(), //0,1,2,3 lorqu'on est sur _selectedIndex = 0 selectedMenu
+    AjouterEleve(),ModifierEleve(),SupprimerEleve(),AfficherEleve()        //si selected index = 1 doit chercher entre 4,5,6,7 selectedMenu+4
   ];
 
-  static List<Widget> pagesParcour = <Widget>[
-    AjouterParcour(),ModifierParcour(),SupprimerEleve(),AfficherParcour()
-  ];
-  static List<Widget> pagesEleve = <Widget>[
-    AjouterEleve(),ModifierEleve(),SupprimerEleve(),AfficherEleve()
-  ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    if (_selectedIndex == 0 ){
+      _selectedMenu = _selectedMenuParcour;
+    }else{
+      _selectedMenu = _selectedMenuEleve + 4;
+    }
   }
 
   void selectMenu(int menuChoisi){
     if (_selectedIndex == 0 ){
-      _selectedMenuParcour = menuChoisi;
+      _selectedMenu = menuChoisi;
     }else{
-      _selectedMenuEleve = menuChoisi;
+      _selectedMenu = menuChoisi + 4;
     }
   }
 
@@ -134,8 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: IndexedStack(
-        index: _selectedIndex,
-        children: [_getPage(_selectedMenuParcour,_selectedMenuEleve,0),_getPage(_selectedMenuParcour,_selectedMenuEleve,1)],
+        index: _selectedMenu,
+        children: allPages
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -152,16 +150,5 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: _onItemTapped,
       ),
     );
-  }
-
-  Widget _getPage(int menuParcour,int menuEleve, int navBarChoisie) {
-    switch (navBarChoisie) {
-      case 0:
-        return pagesParcour[menuParcour];
-      case 1:
-        return pagesEleve[menuEleve];
-      default:
-        return Center(child: Text('Page inconnue'));
-    }
   }
 }
