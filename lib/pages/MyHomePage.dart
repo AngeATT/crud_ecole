@@ -17,7 +17,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   int _selectedMenuParcour = 0;
   int _selectedMenuEleve = 0;
-
+  FocusScopeNode focusNode = FocusScopeNode();
   int _selectedMenu = 0;
 
 
@@ -36,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }else{
       _selectedMenu = _selectedMenuEleve + 4;
     }
+    focusNode.unfocus();
   }
 
   void selectMenu(int menuChoisi){
@@ -46,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedMenuEleve = menuChoisi;
       _selectedMenu = menuChoisi + 4;
     }
+    focusNode.unfocus();
   }
 
   void _onMenuTapped(int indexMenu){
@@ -54,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //_selectedMenu = indexMenu;
     });
     Navigator.pop(context);
+    focusNode.unfocus();
   }
 
   @override
@@ -133,9 +136,18 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      body: IndexedStack(
-        index: _selectedMenu,
-        children: allPages
+      body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            focusNode.unfocus();
+          },
+          child: FocusScope(
+            node: focusNode,
+            child: IndexedStack(
+                index: _selectedMenu,
+                children: allPages
+            ),
+          )
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
