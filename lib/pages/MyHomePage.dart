@@ -40,8 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void selectMenu(int menuChoisi){
     if (_selectedIndex == 0 ){
+      _selectedMenuParcour = menuChoisi;
       _selectedMenu = menuChoisi;
     }else{
+      _selectedMenuEleve = menuChoisi;
       _selectedMenu = menuChoisi + 4;
     }
   }
