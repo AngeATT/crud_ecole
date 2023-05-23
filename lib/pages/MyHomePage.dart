@@ -51,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMenuTapped(int indexMenu){
     setState(() {
       selectMenu(indexMenu);
+      //_selectedMenu = indexMenu;
     });
     Navigator.pop(context);
   }
@@ -132,7 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      body: _getPage(_selectedMenuParcour,_selectedMenuEleve,_selectedIndex),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [_getPage(_selectedMenuParcour,_selectedMenuEleve,0),_getPage(_selectedMenuParcour,_selectedMenuEleve,1)],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
