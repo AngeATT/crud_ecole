@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('CRUD ECOLE')),
+        title: Text('CRUD ECOLE'),
         centerTitle: true,
       ),
       drawer: Drawer(
@@ -143,9 +143,11 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           child: FocusScope(
             node: focusNode,
-            child: IndexedStack(
-                index: _selectedMenu,
-                children: allPages
+            child: Center(
+              child: IndexedStack(
+                  index: _selectedMenu,
+                  children: allPages
+              ),
             ),
           )
       ),
