@@ -165,6 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat
     );
   }
 }

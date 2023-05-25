@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 //TODO : ajouter le bouton, afficher les parcours en fonction des parcours dans la bd, gerer l'insertion dans la bd
 class AjouterEleve extends StatefulWidget {
@@ -9,20 +10,58 @@ class AjouterEleve extends StatefulWidget {
 }
 
 class _AjouterEleveState extends State<AjouterEleve> {
+  DateFormat formatter = DateFormat('dd-MM-yyyy');
   FocusScopeNode focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
+
+  DateTime selectedDate = DateTime.now();
+  TextEditingController dateController = new TextEditingController();
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(1960, 1),
+        lastDate: DateTime(2024));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+        dateController.value = TextEditingValue(text: formatter.format(picked));
+      });
+  }
+
+  TextEditingController matriculeController = TextEditingController();
+  TextEditingController nomController = TextEditingController();
+  TextEditingController prenomController = TextEditingController();
+  TextEditingController classeController = TextEditingController();
+  TextEditingController moyMathController = TextEditingController();
+  TextEditingController moyInfoController = TextEditingController();
 
   String matricule = '';
   String nom = '';
   String prenom = '';
   String classe = '';
   String moyMath = '';
+  String anniv = "";
   String moyInfo = '';
+
+  void clearChamps() {
+    setState(() {
+      matriculeController.clear();
+      nomController.clear();
+      prenomController.clear();
+      dateController.value =
+          TextEditingValue(text: "Chosir la date d'anniversaire");
+      classeController.clear();
+      moyMathController.clear();
+      moyInfoController.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: GestureDetector(
+    return Scaffold(
+        body: GestureDetector(
             onTap: () {
               focusScopeNode.unfocus();
             },
@@ -45,6 +84,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               ),
                               SizedBox(height: 20.0),
                               TextFormField(
+                                controller: matriculeController,
                                 decoration: InputDecoration(
                                   labelText: 'Matricule',
                                   border: OutlineInputBorder(),
@@ -63,6 +103,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               ),
                               SizedBox(height: 16.0),
                               TextFormField(
+                                controller: nomController,
                                 decoration: InputDecoration(
                                   labelText: 'Nom',
                                   border: OutlineInputBorder(),
@@ -78,6 +119,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               ),
                               SizedBox(height: 16.0),
                               TextFormField(
+                                controller: prenomController,
                                 decoration: InputDecoration(
                                   labelText: 'Prénom',
                                   border: OutlineInputBorder(),
@@ -92,7 +134,26 @@ class _AjouterEleveState extends State<AjouterEleve> {
                                 },
                               ),
                               SizedBox(height: 16.0),
+                              GestureDetector(
+                                onTap: () => _selectDate(context),
+                                child: AbsorbPointer(
+                                  child: TextFormField(
+                                    controller: dateController,
+                                    keyboardType: TextInputType.datetime,
+                                    decoration: InputDecoration(
+                                      hintText:
+                                          "Choisir la date d'anniversaire",
+                                      prefixIcon: Icon(
+                                        Icons.date_range,
+                                        color: Colors.lightBlueAccent,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 16.0),
                               TextFormField(
+                                controller: classeController,
                                 decoration: InputDecoration(
                                   labelText: 'Classe',
                                   border: OutlineInputBorder(),
@@ -108,6 +169,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               ),
                               SizedBox(height: 16.0),
                               TextFormField(
+                                controller: moyMathController,
                                 decoration: InputDecoration(
                                   labelText: 'Moyenne Math',
                                   border: OutlineInputBorder(),
@@ -123,6 +185,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               ),
                               SizedBox(height: 16.0),
                               TextFormField(
+                                controller: moyInfoController,
                                 decoration: InputDecoration(
                                   labelText: 'Moyenne Info',
                                   border: OutlineInputBorder(),
@@ -149,9 +212,21 @@ class _AjouterEleveState extends State<AjouterEleve> {
                                     print('Classe: $classe');
                                     print('Moyenne Math: $moyMath');
                                     print('Moyenne Info: $moyInfo');
+                                    //TODO : enregistrer l'éléve et clear les champs si il a été enregistré
                                   }
                                 },
                                 child: Text('Valider'),
+                              ),
+                              SizedBox(height: 16.0),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: FloatingActionButton(
+                                  onPressed: () {
+                                    clearChamps();
+                                  },
+                                  child: const Icon(Icons.close),
+                                  backgroundColor: Colors.lightBlueAccent,
+                                ),
                               ),
                             ],
                           ),
