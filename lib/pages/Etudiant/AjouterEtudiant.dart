@@ -91,6 +91,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           height: 20.0,
                         ),
                         TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           textCapitalization: TextCapitalization.characters,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
@@ -112,6 +113,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                         ),
                         const SizedBox(height: 16.0),
                         TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           textCapitalization: TextCapitalization.words,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
@@ -134,6 +136,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                         ),
                         const SizedBox(height: 16.0),
                         TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           textCapitalization: TextCapitalization.words,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
@@ -159,6 +162,11 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           onTap: () => _selectDate(context),
                           child: AbsorbPointer(
                             child: TextFormField(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              validator: (value) => value!.isEmpty
+                                  ? 'Renseignez la date de naissance'
+                                  : null,
                               controller: dateController,
                               decoration: InputDecoration(
                                 hintText: "Date de naissance",
@@ -175,6 +183,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           ),
                         ),
                         DropdownButtonFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           items: classes.entries
                               .map((MapEntry<int, String> entry) {
                             return DropdownMenuItem<int>(
@@ -202,14 +211,15 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                         ),
                         const SizedBox(height: 16.0),
                         TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.number,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
                                 RegExp(r'[0-9.]')),
                             DecimalTextInputFormatter(),
                             LengthLimitingTextInputFormatter(5),
-                            CustomMaxValueInputFormatter(maxInputValue: 20),
                           ],
                           decoration: const InputDecoration(
                             labelText: 'Moyenne Math',
@@ -218,6 +228,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Veuillez entrer la moyenne en Math';
+                            } else if (value.contains('.')) {
+                              if (value.indexOf('.') < value.length - 3) {
+                                return 'Maximum 2 chiffres après la virgule';
+                              } else if (value.indexOf('.') ==
+                                  value.length - 1) {
+                                return 'Note non valide';
+                              }
                             } else {
                               try {
                                 double note = double.parse(value);
@@ -230,6 +247,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 return null;
                               }
                             }
+                            return null;
                           },
                           onSaved: (value) {
                             try {
@@ -241,14 +259,15 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                         ),
                         const SizedBox(height: 16.0),
                         TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
                                 RegExp(r'[0-9.]')),
                             DecimalTextInputFormatter(),
                             LengthLimitingTextInputFormatter(5),
-                            CustomMaxValueInputFormatter(maxInputValue: 20),
                           ],
-                          keyboardType: TextInputType.number,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
                           decoration: const InputDecoration(
                             labelText: 'Moyenne Info',
                             border: OutlineInputBorder(),
@@ -256,6 +275,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return 'Veuillez entrer la moyenne en Info';
+                            } else if (value.contains('.')) {
+                              if (value.indexOf('.') < value.length - 3) {
+                                return 'Maximum 2 chiffres après la virgule';
+                              } else if (value.indexOf('.') ==
+                                  value.length - 1) {
+                                return 'Note non valide';
+                              }
                             } else {
                               try {
                                 double note = double.parse(value);
@@ -268,6 +294,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 return null;
                               }
                             }
+                            return null;
                           },
                           onSaved: (value) {
                             try {
