@@ -1,12 +1,12 @@
+import 'package:crud_ecole/pages/Etudiant/AfficherEtudiant.dart';
+import 'package:crud_ecole/pages/Etudiant/AjouterEtudiant.dart';
+import 'package:crud_ecole/pages/Etudiant/ModifierEtudiant.dart';
+import 'package:crud_ecole/pages/Etudiant/SupprimerEtudiant.dart';
+import 'package:crud_ecole/pages/Parcours/AfficherParcours.dart';
+import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
+import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
+import 'package:crud_ecole/pages/Parcours/SupprimerParcours.dart';
 import 'package:flutter/material.dart';
-import 'AjouterEleve.dart';
-import 'AjouterParcour.dart';
-import 'ModifierParcour.dart';
-import 'ModifierEleve.dart';
-import 'SupprimerEleve.dart';
-import 'SupprimerParcour.dart';
-import 'AfficherEleve.dart';
-import 'AfficherParcour.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -14,132 +14,168 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
+  FocusScopeNode focusNode = FocusScopeNode();
+  int _selectedTabIndex = 0;
   int _selectedMenu = 0;
+  int _parcoursMenuIndex = 0;
+  int _etudiantMenuIndex = 0;
 
-  static List <List<Widget>> pages = <List<Widget>>[ //gere laffichage des menus
-    [AjouterParcour(),AjouterEleve()],
-    [ModifierParcour(),ModifierEleve()],
-    [SupprimerParcour(),SupprimerEleve()],
-    [AfficherParcour(),AfficherEleve()]
-
+  final headertitles = <String>['Parcours', 'Etudiants'];
+  static List<Widget> allPages = <Widget>[
+    AfficherParcours(),
+    AjouterParcours(),
+    ModifierParcours(),
+    SupprimerParcours(),
+    AfficherEtudiant(),
+    AjouterEtudiant(),
+    ModifierEtudiant(),
+    SupprimerEtudiant(),
   ];
-  void _onItemTapped(int index) {
+
+  void selectMenu() {
     setState(() {
-      _selectedIndex = index;
+      switch (_selectedTabIndex) {
+        case 0:
+          switch (_parcoursMenuIndex) {
+            case 0:
+              _selectedMenu = 0;
+              break;
+            case 1:
+              _selectedMenu = 1;
+              break;
+            case 2:
+              _selectedMenu = 2;
+              break;
+            case 3:
+              _selectedMenu = 3;
+              break;
+          }
+          break;
+        case 1:
+          switch (_etudiantMenuIndex) {
+            case 0:
+              _selectedMenu = 4;
+              break;
+            case 1:
+              _selectedMenu = 5;
+              break;
+            case 2:
+              _selectedMenu = 6;
+              break;
+            case 3:
+              _selectedMenu = 7;
+              break;
+          }
+          break;
+      }
     });
+    FocusManager.instance.primaryFocus?.unfocus();
   }
 
-  void _onMenuTapped(int indexMenu){
+  void _onTabSelected(int index) {
     setState(() {
-      _selectedMenu = indexMenu;
+      _selectedTabIndex = index;
     });
-    Navigator.pop(context);
+    selectMenu();
   }
+
+  void _onMenuSelected(int indexMenu) {
+    Navigator.pop(context);
+    switch (_selectedTabIndex) {
+      case 0:
+        _parcoursMenuIndex = indexMenu;
+        break;
+      case 1:
+        _etudiantMenuIndex = indexMenu;
+        break;
+      default:
+    }
+    selectMenu();
+  }
+
+  void clear() {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('CRUD ECOLE')),
         centerTitle: true,
+        title: const Text('CRUD ECOLE'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: clear,
+        child: const Icon(Icons.clear),
       ),
       drawer: Drawer(
-        child: Container(
-          //TODO : modifier couleur
-          color: Colors.deepPurple[300],
-          child: ListView(
-            children: [
-              Container(
-                child: DrawerHeader(
-                    child: Center(
-                        child: Text(
-                          'ACCEUIL',
-                          style: TextStyle(fontSize: 25),
-                        )
-                    )
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Center(
+                child: Text(
+                  headertitles[_selectedTabIndex],
+                  style: const TextStyle(fontSize: 25),
                 ),
               ),
-              ListTile(
-                leading: Icon(
-                  Icons.add,
-                  size: 40,
-                  shadows: [],
-                ),
-                title: Text(
-                  'Ajouter',
-                  style: TextStyle(fontSize: 18),
-                ),
-                onTap: () {
-                  _onMenuTapped(0);
-                },
+            ),
+            ListTile(
+              leading: const Icon(Icons.list_alt_sharp),
+              title: const Text('Afficher', style: TextStyle(fontSize: 18)),
+              onTap: () {
+                _onMenuSelected(0);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.add),
+              title: const Text(
+                'Ajouter',
+                style: TextStyle(fontSize: 18),
               ),
-              ListTile(
-                leading: Icon(
-                    Icons.edit
-                ),
-                title: Text(
-                    'Modifier',
-                    style: TextStyle(fontSize: 18)
-                ),
-                onTap: () {
-                  _onMenuTapped(1);
-                },
-              ),
-              ListTile(
-                leading: Icon(
-                    Icons.delete
-                ),
-                title: Text(
-                    'Supprimer',
-                    style: TextStyle(fontSize: 18)
-                ),
-                onTap: () {
-                  _onMenuTapped(2);
-                },
-              ),
-              ListTile(
-                leading: Icon(
-                    Icons.list_alt_sharp
-                ),
-                title: Text(
-                    'Afficher',
-                    style: TextStyle(fontSize: 18)
-                ),
-                onTap: () {
-                  _onMenuTapped(3);
-                },
-              )
-            ],
-          ),
+              onTap: () {
+                _onMenuSelected(1);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Modifier', style: TextStyle(fontSize: 18)),
+              onTap: () {
+                _onMenuSelected(2);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete),
+              title: const Text('Supprimer', style: TextStyle(fontSize: 18)),
+              onTap: () {
+                _onMenuSelected(3);
+              },
+            ),
+          ],
         ),
       ),
-      body: _getPage(_selectedMenu,_selectedIndex),
+      body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            focusNode.unfocus();
+          },
+          child: FocusScope(
+            node: focusNode,
+            child: Center(
+              child: IndexedStack(index: _selectedMenu, children: allPages),
+            ),
+          )),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'Parcour',
+            icon: const Icon(Icons.school),
+            label: headertitles[0],
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Eleve',
+            icon: const Icon(Icons.person),
+            label: headertitles[1],
           )
         ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        currentIndex: _selectedTabIndex,
+        onTap: _onTabSelected,
       ),
     );
-  }
-
-  Widget _getPage(int indexMenu,int index) {
-    switch (index) {
-      case 0:
-        return pages[indexMenu][0];
-      case 1:
-        return pages[indexMenu][1];
-      default:
-        return Center(child: Text('Page inconnue'));
-    }
   }
 }

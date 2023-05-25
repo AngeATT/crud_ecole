@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class AfficherEleve extends StatefulWidget {
+class AjouterParcours extends StatefulWidget {
   @override
-  _AfficherEleveState createState() => _AfficherEleveState();
+  _AjouterParcoursState createState() => _AjouterParcoursState();
 }
 
-class _AfficherEleveState extends State<AfficherEleve> {
+class _AjouterParcoursState extends State<AjouterParcours> {
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'test afficher eleve',
+        'AjouterParcours',
         style: TextStyle(fontSize: 24.0),
       ),
     );

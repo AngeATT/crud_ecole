@@ -6,5 +6,6 @@ class Eleve {
   double moyMath;
   double moyInfo;
 
-  Eleve(this.matricule, this.nom, this.prenom, this.classe, this.moyMath, this.moyInfo);
+  Eleve(this.matricule, this.nom, this.prenom, this.classe, this.moyMath,
+      this.moyInfo);
 }
