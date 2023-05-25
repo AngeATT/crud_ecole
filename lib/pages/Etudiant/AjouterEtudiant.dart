@@ -18,6 +18,7 @@ class AjouterEtudiant extends StatefulWidget {
 
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
+
   DataBaseCrud db = DataBaseCrud.databaseInstance();
 
   DateFormat formatter = DateFormat('dd-MM-yyyy');
@@ -30,8 +31,15 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     5: 'Élément 5'
   };
 
-  Eleve getEleve(){
-    return Eleve(matricule: matricule, nom: nom, prenom: prenom, dateAnniv: birthdate.toString(), moyMath: moyMath, moyInfo: moyInfo, classeId: classe);
+  Eleve getEleve() {
+    return Eleve(
+        matricule: matricule,
+        nom: nom,
+        prenom: prenom,
+        dateAnniv: birthdate.toString(),
+        moyMath: moyMath,
+        moyInfo: moyInfo,
+        classeId: classe);
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -44,9 +52,15 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   late double moyMath;
   late double moyInfo;
 
-  TextEditingController matriculeCOntroller = TextEditingController();
+  TextEditingController matriculeController = TextEditingController();
+  TextEditingController nomController = TextEditingController();
+  TextEditingController prenomController = TextEditingController();
+  TextEditingController classeController = TextEditingController();
+  TextEditingController moyMathController = TextEditingController();
+  TextEditingController moyInfoController = TextEditingController();
+  TextEditingController dateController = new TextEditingController();
 
-  TextEditingController dateController = TextEditingController();
+  TextEditingController matriculeCOntroller = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -65,293 +79,311 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     }
   }
 
+  void clearChamps() {
+    setState(() {
+      matriculeController.clear();
+      nomController.clear();
+      prenomController.clear();
+      dateController.value =
+          TextEditingValue(text: "Choisir la date d'anniversaire");
+      classeController.clear();
+      moyMathController.clear();
+      moyInfoController.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        focusScopeNode.unfocus();
-      },
-      child: FocusScope(
-        node: focusScopeNode,
-        child: ListView(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsetsDirectional.only(
-                start: 16.0,
-                top: 16.0,
-                end: 16.0,
-                bottom: 20.0,
-              ),
-              child: Container(
-                alignment: Alignment.center,
-                child: Form(
-                  key: _formKey,
-                  child: Container(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Text(
-                          'Saisir infos étudiant',
-                          style: TextStyle(fontSize: 24.0),
-                          textAlign: TextAlign.center,
+    return Scaffold(
+      body: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: 16.0,
+              top: 16.0,
+              end: 16.0,
+              bottom: 20.0,
+            ),
+            child: Container(
+              alignment: Alignment.center,
+              child: Form(
+                key: _formKey,
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Saisir infos étudiant',
+                        style: TextStyle(fontSize: 24.0),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      TextFormField(
+                        controller: matriculeController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        textCapitalization: TextCapitalization.characters,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9A-Z]'))
+                        ],
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: 'Matricule',
+                          border: OutlineInputBorder(),
                         ),
-                        const SizedBox(
-                          height: 20.0,
+                        validator: (value) {
+                          return value!.isEmpty
+                              ? 'Veuillez entrer le matricule'
+                              : null;
+                        },
+                        onSaved: (value) {
+                          matricule = value!;
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: nomController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        textCapitalization: TextCapitalization.words,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Zéèïë ]')),
+                          NameTextInputFormatter(),
+                        ],
+                        textInputAction: TextInputAction.next,
+                        decoration: const InputDecoration(
+                          labelText: 'Nom',
+                          border: OutlineInputBorder(),
                         ),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          textCapitalization: TextCapitalization.characters,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9A-Z]'))
-                          ],
-                          textInputAction: TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Matricule',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            return value!.isEmpty
-                                ? 'Veuillez entrer le matricule'
-                                : null;
-                          },
-                          onSaved: (value) {
-                            matricule = value!;
-                          },
+                        validator: (value) {
+                          return value!.isEmpty
+                              ? 'Veuillez entrer le nom'
+                              : null;
+                        },
+                        onSaved: (value) {
+                          nom = value!.trim();
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: prenomController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        textCapitalization: TextCapitalization.words,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Zéèïë ]')),
+                          NameTextInputFormatter(),
+                        ],
+                        textInputAction: TextInputAction.done,
+                        decoration: const InputDecoration(
+                          labelText: 'Prénom',
+                          border: OutlineInputBorder(),
                         ),
-                        const SizedBox(height: 16.0),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          textCapitalization: TextCapitalization.words,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[a-zA-Zéèïë ]')),
-                            NameTextInputFormatter(),
-                          ],
-                          textInputAction: TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Nom',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            return value!.isEmpty
-                                ? 'Veuillez entrer le nom'
-                                : null;
-                          },
-                          onSaved: (value) {
-                            nom = value!.trim();
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          textCapitalization: TextCapitalization.words,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[a-zA-Zéèïë ]')),
-                            NameTextInputFormatter(),
-                          ],
-                          textInputAction: TextInputAction.done,
-                          decoration: const InputDecoration(
-                            labelText: 'Prénom',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            return value!.isEmpty
-                                ? 'Veuillez entrer le prénom'
-                                : null;
-                          },
-                          onSaved: (value) {
-                            prenom = value!.trim();
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-                        GestureDetector(
-                          onTap: () => _selectDate(context),
-                          child: AbsorbPointer(
-                            child: TextFormField(
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator: (value) => value!.isEmpty
-                                  ? 'Renseignez la date de naissance'
-                                  : null,
-                              controller: dateController,
-                              decoration: InputDecoration(
-                                hintText: "Date de naissance",
-                                suffixIcon: Padding(
-                                  padding: const EdgeInsets.only(left: 22),
-                                  child: Icon(
-                                    Icons.date_range,
-                                    color: Theme.of(context).primaryColor,
-                                  ),
+                        validator: (value) {
+                          return value!.isEmpty
+                              ? 'Veuillez entrer le prénom'
+                              : null;
+                        },
+                        onSaved: (value) {
+                          prenom = value!.trim();
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      GestureDetector(
+                        onTap: () => _selectDate(context),
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            validator: (value) => value!.isEmpty
+                                ? 'Renseignez la date de naissance'
+                                : null,
+                            controller: dateController,
+                            decoration: InputDecoration(
+                              hintText: "Date de naissance",
+                              suffixIcon: Padding(
+                                padding: const EdgeInsets.only(left: 22),
+                                child: Icon(
+                                  Icons.date_range,
+                                  color: Theme.of(context).primaryColor,
                                 ),
                               ),
-                              keyboardType: TextInputType.datetime,
                             ),
+                            keyboardType: TextInputType.datetime,
                           ),
                         ),
-                        DropdownButtonFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          items: classes.entries
-                              .map((MapEntry<int, String> entry) {
-                            return DropdownMenuItem<int>(
-                              value: entry.key,
-                              child: Text(entry.value),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              classe = value!;
-                            });
-                          },
-                          decoration: const InputDecoration(
-                              labelText: "Classe",
-                              border: UnderlineInputBorder()),
-                          icon: Icon(
-                            Icons.arrow_drop_down_circle_outlined,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          validator: (value) {
-                            return value == null
-                                ? 'Veuillez choisir la classe'
-                                : null;
-                          },
+                      ),
+                      DropdownButtonFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        items:
+                            classes.entries.map((MapEntry<int, String> entry) {
+                          return DropdownMenuItem<int>(
+                            value: entry.key,
+                            child: Text(entry.value),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            classe = value!;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                            labelText: "Classe",
+                            border: UnderlineInputBorder()),
+                        icon: Icon(
+                          Icons.arrow_drop_down_circle_outlined,
+                          color: Theme.of(context).primaryColor,
                         ),
-                        const SizedBox(height: 16.0),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          textInputAction: TextInputAction.next,
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9.]')),
-                            DecimalTextInputFormatter(),
-                            LengthLimitingTextInputFormatter(5),
-                          ],
-                          decoration: const InputDecoration(
-                            labelText: 'Moyenne Math',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Veuillez entrer la moyenne en Math';
-                            } else if (value.contains('.')) {
-                              if (value.indexOf('.') < value.length - 3) {
-                                return 'Maximum 2 chiffres après la virgule';
-                              } else if (value.indexOf('.') ==
-                                  value.length - 1) {
-                                return 'Note non valide';
-                              }
-                            } else {
-                              try {
-                                double note = double.parse(value);
-                                if (note < 0 || note > 20) {
-                                  return 'Entrez une note comprise entre 0 et 20';
-                                } else {
-                                  return null;
-                                }
-                              } catch (e) {
+                        validator: (value) {
+                          return value == null
+                              ? 'Veuillez choisir la classe'
+                              : null;
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: moyMathController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                          DecimalTextInputFormatter(),
+                          LengthLimitingTextInputFormatter(5),
+                        ],
+                        decoration: const InputDecoration(
+                          labelText: 'Moyenne Math',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Veuillez entrer la moyenne en Math';
+                          } else if (value.contains('.')) {
+                            if (value.indexOf('.') < value.length - 3) {
+                              return 'Maximum 2 chiffres après la virgule';
+                            } else if (value.indexOf('.') == value.length - 1) {
+                              return 'Note non valide';
+                            }
+                          } else {
+                            try {
+                              double note = double.parse(value);
+                              if (note < 0 || note > 20) {
+                                return 'Entrez une note comprise entre 0 et 20';
+                              } else {
                                 return null;
                               }
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            try {
-                              moyMath = double.parse(value!);
                             } catch (e) {
-                              //nothing to catch
+                              return null;
                             }
-                          },
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          try {
+                            moyMath = double.parse(value!);
+                          } catch (e) {
+                            //nothing to catch
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 16.0),
+                      TextFormField(
+                        controller: moyInfoController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                          DecimalTextInputFormatter(),
+                          LengthLimitingTextInputFormatter(5),
+                        ],
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        decoration: const InputDecoration(
+                          labelText: 'Moyenne Info',
+                          border: OutlineInputBorder(),
                         ),
-                        const SizedBox(height: 16.0),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9.]')),
-                            DecimalTextInputFormatter(),
-                            LengthLimitingTextInputFormatter(5),
-                          ],
-                          keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          decoration: const InputDecoration(
-                            labelText: 'Moyenne Info',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Veuillez entrer la moyenne en Info';
-                            } else if (value.contains('.')) {
-                              if (value.indexOf('.') < value.length - 3) {
-                                return 'Maximum 2 chiffres après la virgule';
-                              } else if (value.indexOf('.') ==
-                                  value.length - 1) {
-                                return 'Note non valide';
-                              }
-                            } else {
-                              try {
-                                double note = double.parse(value);
-                                if (note < 0 || note > 20) {
-                                  return 'Entrez une note comprise entre 0 et 20';
-                                } else {
-                                  return null;
-                                }
-                              } catch (e) {
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Veuillez entrer la moyenne en Info';
+                          } else if (value.contains('.')) {
+                            if (value.indexOf('.') < value.length - 3) {
+                              return 'Maximum 2 chiffres après la virgule';
+                            } else if (value.indexOf('.') == value.length - 1) {
+                              return 'Note non valide';
+                            }
+                          } else {
+                            try {
+                              double note = double.parse(value);
+                              if (note < 0 || note > 20) {
+                                return 'Entrez une note comprise entre 0 et 20';
+                              } else {
                                 return null;
                               }
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            try {
-                              moyInfo = double.parse(value!);
                             } catch (e) {
-                              //nothing to catch
+                              return null;
                             }
-                          },
-                        ),
-                        const SizedBox(height: 20.0),
-                        Container(
-                          alignment: Alignment.center,
-                          child: SizedBox(
-                            width: 200,
-                            height: 40,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                FocusManager.instance.primaryFocus?.unfocus();
-                                if (_formKey.currentState!.validate()) {
-                                  _formKey.currentState!.save();
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          try {
+                            moyInfo = double.parse(value!);
+                          } catch (e) {
+                            //nothing to catch
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 20.0),
+                      Container(
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          width: 200,
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
 
-                                  try{
-                                    db.insertEleve(getEleve());
-                                    makeToast("Eleve enregistré");
-                                  }catch(e,printStack){
-                                    print(printStack);
-                                    makeToast("Insertion impossible");
-                                  }
-                                  // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
-                                  // par exemple, vous pouvez les afficher dans la console :
+                                try {
+                                  db.insertEleve(getEleve());
+                                  makeToast("Eleve enregistré");
+                                } catch (e, printStack) {
+                                  print(printStack);
+                                  makeToast("Insertion impossible");
                                 }
-                              },
-                              child: const Text('Valider'),
-                            ),
+                                // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
+                                // par exemple, vous pouvez les afficher dans la console :
+                              }
+                            },
+                            child: const Text('Valider'),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+          Icons.clear,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          clearChamps();
+          },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-  void makeToast(String message){
+
+  void makeToast(String message) {
     Fluttertoast.showToast(
       msg: message,
       toastLength: Toast.LENGTH_LONG,

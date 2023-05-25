@@ -8,44 +8,79 @@ class AfficherEtudiant extends StatefulWidget {
 }
 
 class _AfficherEtudiantState extends State<AfficherEtudiant> {
+  TextEditingController _searchController = TextEditingController();
   DataBaseCrud db = DataBaseCrud.databaseInstance();
   String affiche = 'test afficher Etudiant';
   List<String> eleves = [];
 
-
   @override
   int count = 1;
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: getAfficherParcourView(), // fonction permettant d'afficher la liste de tout les parcours dans le body
-    );
-  }
-  //paramétrage de la fonction
 
-  getAfficherParcourView() {
-    return ListView.builder(
-      itemCount: count,
-      itemBuilder: (BuildContext context, int position) {
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.blueGrey,
-              child: Icon(Icons.upgrade),
-            ),
-            title: Text(
-              'Matricule :',
-              style: TextStyle(color: Colors.black),
-            ),
-            subtitle: Text(
-              'Nom :',
-              style: TextStyle(color: Colors.black),
-            ),
-            trailing: Icon(Icons.delete_forever, color: Colors.grey),
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(15),
+      scrollDirection: Axis.vertical,
+      child: Column(
+        children: [
+          const Text(
+            'Liste des étudiants',
+            style: TextStyle(fontSize: 24.0),
+            textAlign: TextAlign.center,
           ),
-        );
-      },
+          const SizedBox(height: 16.0),
+          Row(
+            children: [
+              const SizedBox(height: 16.0),
+              Container(
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search),
+                    labelText: 'Nom Etudiant',
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                      },
+                    ),
+                  ),
+                  onChanged: (value) {
+                    // Effectuez une action lorsque le texte de recherche change
+                    // par exemple, filtrez une liste ou effectuez une recherche dans une base de données
+                    print(value);
+                  },
+                ),
+                width: 350,
+              )
+            ],
+          ),
+          const SizedBox(height: 16.0),
+          ListView.builder(
+              itemCount: count,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int position) {
+                return Card(
+                  color: Colors.white,
+                  elevation: 2.0,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.blueGrey,
+                      child: Icon(Icons.upgrade),
+                    ),
+                    title: Text(
+                      'Matricule :',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    subtitle: Text(
+                      'Nom :',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    trailing: Icon(Icons.delete_forever, color: Colors.grey),
+                  ),
+                );
+              })
+        ],
+      ),
     );
   }
 }

@@ -109,7 +109,7 @@ class DataBaseCrud {
     whereArgs: [eleve.matricule]
     );
   }
-  Future<void> update(Parcours parcours) async{
+  Future<void> updateParcour(Parcours parcours) async{
     final db = await initializedDB();
     await db.update(PARCOURS_TABLE_NAME,
         parcours.toMap(),

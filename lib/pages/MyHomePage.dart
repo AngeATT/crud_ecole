@@ -152,17 +152,9 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      body: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            focusNode.unfocus();
-          },
-          child: FocusScope(
-            node: focusNode,
-            child: Center(
+      body:  Container(
               child: IndexedStack(index: _selectedMenu, children: allPages),
             ),
-          )),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(

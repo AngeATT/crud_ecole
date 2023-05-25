@@ -6,7 +6,7 @@ class AfficherParcours extends StatefulWidget {
 }
 
 class _AfficherParcoursState extends State<AfficherParcours> {
-  int count = 0;
+  int count = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,8 @@ class _AfficherParcoursState extends State<AfficherParcours> {
   //paramétrage de la fonction
 
   getAfficherParcourView() {
-    return ListView.builder(
+    return
+      ListView.builder(
       itemCount: count,
       itemBuilder: (BuildContext context, int position) {
         return Card(
