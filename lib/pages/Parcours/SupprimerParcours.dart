@@ -42,7 +42,7 @@ class _SupprimerParcourState extends State<SupprimerParcours> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Text(
-                          'Saisir Parcours Etudiant',
+                          'Supprimer Parcours Etudiant',
                           style: TextStyle(fontSize: 24.0),
                           textAlign: TextAlign.center,
                         ),
