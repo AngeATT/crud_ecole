@@ -15,6 +15,15 @@ class AjouterEtudiant extends StatefulWidget {
 
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
+  Map<int, String> classes = {
+    1: 'Élément 1',
+    2: 'Élément 2',
+    3: 'Élément 3',
+    4: 'Élément 4',
+    5: 'Élément 5'
+  };
+
+  int? valueSelectedDropBtn;
   final _formKey = GlobalKey<FormState>();
 
   late String matricule;
@@ -70,10 +79,9 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Veuillez entrer le matricule';
-                            }
-                            return null;
+                            return value!.isEmpty
+                                ? 'Veuillez entrer le matricule'
+                                : null;
                           },
                           onSaved: (value) {
                             matricule = value!;
@@ -98,7 +106,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 : null;
                           },
                           onSaved: (value) {
-                            nom = (value != null) ? value : '';
+                            nom = value!.trim();
                           },
                         ),
                         const SizedBox(height: 16.0),
@@ -115,27 +123,40 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
-                            return (value != null) && (value.isEmpty)
+                            return value!.isEmpty
                                 ? 'Veuillez entrer le prénom'
                                 : null;
                           },
                           onSaved: (value) {
-                            prenom = (value != null) ? value : '';
+                            prenom = value!.trim();
                           },
                         ),
                         const SizedBox(height: 16.0),
-                        TextFormField(
+                        DropdownButtonFormField(
+                          value: valueSelectedDropBtn,
+                          items: classes.entries
+                              .map((MapEntry<int, String> entry) {
+                            return DropdownMenuItem<int>(
+                              value: entry.key,
+                              child: Text(entry.value),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              valueSelectedDropBtn = value;
+                            });
+                          },
                           decoration: const InputDecoration(
-                            labelText: 'Classe',
-                            border: OutlineInputBorder(),
+                              labelText: "Classe",
+                              border: UnderlineInputBorder()),
+                          icon: Icon(
+                            Icons.arrow_drop_down_circle_outlined,
+                            color: Theme.of(context).primaryColor,
                           ),
                           validator: (value) {
-                            return (value != null) && (value.isEmpty)
-                                ? 'Veuillez entrer la classe'
+                            return value == null
+                                ? 'Veuillez choisir la classe'
                                 : null;
-                          },
-                          onSaved: (value) {
-                            classe = (value != null) ? value : '';
                           },
                         ),
                         const SizedBox(height: 16.0),
@@ -223,6 +244,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             height: 40,
                             child: ElevatedButton(
                               onPressed: () {
+                                FocusManager.instance.primaryFocus?.unfocus();
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
                                   // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
