@@ -2,6 +2,7 @@ import 'package:crud_ecole/textinputformatters/CustomMaxValueInputFormatter.dart
 import 'package:crud_ecole/textinputformatters/DecimalTextInputFormatter.dart';
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../DAO/eleve_dao.dart';
 import '../../models/eleves.dart';
@@ -28,15 +29,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   ]; //TODO : supprimer cette liste et remplacer par un appel à la bd
     //TODO : désactiver le formulaire si la table classe est vide
 
-
   String? valueSelectedDropBtn;
-  DateFormat formatter = DateFormat('dd-MM-yyyy');
   FocusScopeNode focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
-
+  DateFormat formatter = DateFormat('dd-MM-yyyy');
   DateTime selectedDate = DateTime.now();
-  TextEditingController dateController = new TextEditingController();
 
+  bool noError = true;
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -56,6 +55,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   TextEditingController classeController = TextEditingController();
   TextEditingController moyMathController = TextEditingController();
   TextEditingController moyInfoController = TextEditingController();
+  TextEditingController dateController = new TextEditingController();
 
   String matricule = '';
   String nom = '';
@@ -77,11 +77,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
       moyInfoController.clear();
     });
   }
+
   Eleve getEleve(){
     double? moyMathVerif = double.tryParse(moyMathController.text);
     double moyMath = (moyMathVerif != null) ? moyMathVerif : 0;
     double moyInfo = double.tryParse(moyInfoController.text)!;
-    return Eleve(matricule: matriculeController.text,
+    return Eleve(matricule:
+    matriculeController.text,
         nom: nomController.text,
         prenoms: prenomController.text,
         moyMath:moyMath,
@@ -115,6 +117,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                               ),
                               SizedBox(height: 20.0),
                               TextFormField(
+                                controller: matriculeController,
                                 textCapitalization: TextCapitalization.characters,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
@@ -137,6 +140,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                               ),
                               const SizedBox(height: 16.0),
                               TextFormField(
+                                controller: nomController,
                                 textCapitalization: TextCapitalization.words,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
@@ -159,6 +163,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                               ),
                               const SizedBox(height: 16.0),
                               TextFormField(
+                                controller: prenomController,
                                 textCapitalization: TextCapitalization.words,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
@@ -220,6 +225,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                               ),
                               SizedBox(height: 16.0),
                               TextFormField(
+                                controller: moyMathController,
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [
@@ -259,6 +265,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                               ),
                               const SizedBox(height: 16.0),
                               TextFormField(
+                                controller: moyInfoController,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
                                       RegExp(r'[0-9.]')),
@@ -300,10 +307,29 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     _formKey.currentState!.save();
+                                    noError = true;
                                     try{
                                       eleveDAO.insertEleve(getEleve());
                                     }catch(e){
-                                      e.toString();
+                                      Fluttertoast.showToast(
+                                        msg: 'Matricule déjà attribué !',
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.CENTER,
+                                        timeInSecForIosWeb: 1,
+                                        backgroundColor: Colors.grey[600],
+                                        textColor: Colors.white,
+                                      );
+                                      noError = false;
+                                  }
+                                  if (noError){
+                                    Fluttertoast.showToast(
+                                      msg: 'Eleve enregistré !',
+                                      toastLength: Toast.LENGTH_LONG,
+                                      gravity: ToastGravity.CENTER,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Colors.grey[600],
+                                      textColor: Colors.white,
+                                    );
                                   }
                                     //TODO : enregistrer l'éléve et clear les champs si il a été enregistré
                                     //TODO : vérifier les moyennes, vérifier les regex des noms prenoms etc, vérifier la forme des matricules
