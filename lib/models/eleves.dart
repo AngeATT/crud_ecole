@@ -1,4 +1,5 @@
 import 'package:moor_flutter/moor_flutter.dart';
+import '../DAO/eleve_dao.dart';
 
 part 'eleves.g.dart';
 
@@ -23,4 +24,6 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+
 }

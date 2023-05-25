@@ -1,5 +1,8 @@
+import '../DAO/eleve_dao.dart';
+import '../models/eleves.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../DAO/eleve_dao.dart';
 
 //TODO : ajouter le bouton, afficher les parcours en fonction des parcours dans la bd, gerer l'insertion dans la bd
 class AjouterEleve extends StatefulWidget {
@@ -10,6 +13,7 @@ class AjouterEleve extends StatefulWidget {
 }
 
 class _AjouterEleveState extends State<AjouterEleve> {
+  EleveDAO eleveDAO = EleveDAO.getEleveDao();
   List<String> _items = [
     'Élément 1',
     'Élément 2',
@@ -18,6 +22,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
     'Élément 5',
   ]; //TODO : supprimer cette liste et remplacer par un appel à la bd
     //TODO : désactiver le formulaire si la table classe est vide
+
 
   String? valueSelectedDropBtn;
   DateFormat formatter = DateFormat('dd-MM-yyyy');
@@ -56,7 +61,6 @@ class _AjouterEleveState extends State<AjouterEleve> {
   String moyInfo = '';
 
   void clearChamps() {
-
     setState(() {
       matriculeController.clear();
       nomController.clear();
@@ -67,6 +71,17 @@ class _AjouterEleveState extends State<AjouterEleve> {
       moyMathController.clear();
       moyInfoController.clear();
     });
+  }
+  Eleve getEleve(){
+    double? moyMathVerif = double.tryParse(moyMathController.text);
+    double moyMath = (moyMathVerif != null) ? moyMathVerif : 0;
+    double moyInfo = double.tryParse(moyInfoController.text)!;
+    return Eleve(matricule: matriculeController.text,
+        nom: nomController.text,
+        prenoms: prenomController.text,
+        moyMath:moyMath,
+        moyInfo: moyInfo ,
+        parcours: valueSelectedDropBtn!);
   }
 
   @override
@@ -239,14 +254,11 @@ class _AjouterEleveState extends State<AjouterEleve> {
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     _formKey.currentState!.save();
-                                    // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
-                                    // par exemple, vous pouvez les afficher dans la console :
-                                    print('Matricule: $matricule');
-                                    print('Nom: $nom');
-                                    print('Prénom: $prenom');
-                                    print('Classe: $classe');
-                                    print('Moyenne Math: $moyMath');
-                                    print('Moyenne Info: $moyInfo');
+                                    try{
+                                      eleveDAO.insertEleve(getEleve());
+                                    }catch(e){
+                                      e.toString();
+                                  }
                                     //TODO : enregistrer l'éléve et clear les champs si il a été enregistré
                                     //TODO : vérifier les moyennes, vérifier les regex des noms prenoms etc, vérifier la forme des matricules
                                   }
