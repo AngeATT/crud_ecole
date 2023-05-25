@@ -1,5 +1,4 @@
 
-import 'package:crud_ecole/models/eleves.dart';
 import 'package:flutter/material.dart';
 
 class AjouterParcours extends StatefulWidget {

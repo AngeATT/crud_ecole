@@ -3,16 +3,17 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../models/Parcours.dart';
 
-class DataBase{
-  static DataBase uniqueDB = DataBase();
+class DataBaseCrud {
+  Database? db;
+  static DataBaseCrud _uniqueDB = DataBaseCrud();
   static final String ETUDIANT_TABLE_NAME = "etudiant";
   static final String ETUDIANT_COLUMN_MAT = "matricule";
   static final String ETUDIANT_COLUMN_NOM = "nom";
   static final String ETUDIANT_COLUMN_PRENOM = "prenom";
-  static final String ETUDIANT_COLUMN_ANNIV = "dateAnniversaire";
-  static final String ETUDIANT_COLUMN_CLASSE_ID = "classeid";
-  static final String ETUDIANT_COLUMN_MATH = "math";
-  static final String ETUDIANT_COLUMN_INFO = "info";
+  static final String ETUDIANT_COLUMN_ANNIV = "dateAnniv";
+  static final String ETUDIANT_COLUMN_CLASSE_ID = "parcour"; //changer to classeId après
+  static final String ETUDIANT_COLUMN_MATH = "moyMath";
+  static final String ETUDIANT_COLUMN_INFO = "moyInfo";
   static final String PARCOURS_TABLE_NAME = "parcour";
   static final String CLASSE_COLUMN_CODE = "id";
   static final String CLASSE_COLUMN_LIBELLE = "libelle";
@@ -38,68 +39,66 @@ class DataBase{
       CLASSE_COLUMN_LIBELLE + " TEXT NOT NULL UNIQUE CHECK (length(" + CLASSE_COLUMN_LIBELLE + ") > 0), " +
       "CHECK (" + CLASSE_COLUMN_CODE + " > 0 ))";
 
-  static DataBase databaseInstance(){
-    if (uniqueDB == null ){
-      uniqueDB = DataBase();
+  static DataBaseCrud databaseInstance(){
+    if (_uniqueDB == null ){
+      _uniqueDB = DataBaseCrud();
     }
-    return uniqueDB;
+    return _uniqueDB;
   }
-  Future<Database> initializedDB() async {
-    return openDatabase(
+  Future initializedDB() async {
+    db = await openDatabase(
       join(await getDatabasesPath(), 'databaseCrud.db'),
-      onCreate: (db, version) {
-        db.execute(queryetudiant);
-        db.execute(queryparcours);
+      onCreate: (db, version) async {
+       await db.execute(queryetudiant);
+        await db.execute(queryparcours);
       },
       version: 1,
     );
   }
 
   Future<void> insertEleve (Eleve eleve) async{
-    final db = await initializedDB();
-    await db.insert(ETUDIANT_TABLE_NAME, eleve.toMap(), conflictAlgorithm: ConflictAlgorithm.abort);
+    await db?.insert(ETUDIANT_TABLE_NAME, eleve.toMap(), conflictAlgorithm: ConflictAlgorithm.abort);
+
   }
   Future<void> insertParcour (Eleve eleve) async{
-    final db = await initializedDB();
-    await db.insert(PARCOURS_TABLE_NAME, eleve.toMap(), conflictAlgorithm: ConflictAlgorithm.abort);
+
+    await db?.insert(PARCOURS_TABLE_NAME, eleve.toMap(), conflictAlgorithm: ConflictAlgorithm.abort);
   }
   Future<List<Eleve>> getEleves () async{
-    final db = await initializedDB();
-    final List<Map<String,dynamic>> maps = await db.query(ETUDIANT_TABLE_NAME);
-    return List.generate(maps.length, (i){
-       return Eleve(
-        matricule: maps[i]['matricule'],
-        nom: maps[i]['nom'],
-         prenom: maps[i]['prenom'],
-         dateAnniv: maps[i]['dateAnniv'],
-         moyMath: maps[i]['moyMath'],
-         moyInfo: maps[i]['moyInfo'],
-         parcour: maps[i]['parcour'],
-    );
-    });
+    if (db == null){
+      initializedDB();
+    }
+    final List<Map<String,dynamic>>? maps = await db?.query(ETUDIANT_TABLE_NAME);
+    if (maps != null){
+      return List.generate(maps.length, (i){
+        return Eleve(
+          matricule: maps[i]['matricule'],
+          nom: maps[i]['nom'],
+          prenom: maps[i]['prenom'],
+          dateAnniv: maps[i]['dateAnniv'],
+          moyMath: maps[i]['moyMath'],
+          moyInfo: maps[i]['moyInfo'],
+          parcour: maps[i]['parcour'],
+        );
+      });
+    }else{
+      return [];
+    }
+
   }
-  Future<List<Eleve>> getParcours () async{
-    final db = await initializedDB();
-    final List<Map<String,dynamic>> maps = await db.query(ETUDIANT_TABLE_NAME);
-    return List.generate(maps.length, (i){
-      return Eleve(
-        matricule: maps[i]['matricule'],
-        nom: maps[i]['nom'],
-        prenom: maps[i]['prenom'],
-        dateAnniv: maps[i]['dateAnniv'],
-        moyMath: maps[i]['moyMath'],
-        moyInfo: maps[i]['moyInfo'],
-        parcour: maps[i]['parcour'],
-        //classeID : maps[i]['classeId']
-      );
-    });
-  }
-  Future<List<Parcours>> getParcour () async{
-    final db = await initializedDB();
-    final List<Map<String,dynamic>> maps = await db.query(PARCOURS_TABLE_NAME);
-    return List.generate(maps.length, (i){
-      return Parcours(id: maps[i]['id'], libelleParcour: maps[i]['libelleParcour']);
-  });
+  Future<List<Parcours>> getParcours() async{
+    if (db == null){
+      initializedDB();
+    }
+    final List<Map<String,dynamic>>? maps = await db?.query(PARCOURS_TABLE_NAME);
+    if (maps != null ){
+      return List.generate(maps.length, (i){
+        return Parcours(id: maps[i]['id'], libelle: maps[i]['libelle']);
+      });
+    }else{
+      return [];
+    }
+
   }
 
   Future<void> updateEleve(Eleve eleve) async{

@@ -1,3 +1,4 @@
+import 'package:crud_ecole/Db/DataBaseCrud.dart';
 import 'package:flutter/material.dart';
 
 class SupprimerEtudiant extends StatefulWidget {
@@ -6,6 +7,7 @@ class SupprimerEtudiant extends StatefulWidget {
 }
 
 class _SupprimerEtudiantState extends State<SupprimerEtudiant> {
+
   @override
   Widget build(BuildContext context) {
     return Center(

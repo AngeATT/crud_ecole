@@ -3,12 +3,11 @@ import 'package:crud_ecole/textinputformatters/DecimalTextInputFormatter.dart';
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../../Db/DataBaseCrud.dart';
 
-import '../../DAO/eleve_dao.dart';
-import '../../models/eleves.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../DAO/eleve_dao.dart';
+import 'package:crud_ecole/models/Eleve.dart';
 
 //TODO : ajouter le bouton, afficher les parcours en fonction des parcours dans la bd, gerer l'insertion dans la bd
 class AjouterEtudiant extends StatefulWidget {
@@ -19,7 +18,7 @@ class AjouterEtudiant extends StatefulWidget {
 }
 
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
-  EleveDAO eleveDAO = EleveDAO.getEleveDao();
+  DataBaseCrud db = DataBaseCrud.databaseInstance();
   List<String> _items = [
     'Élément 1',
     'Élément 2',
@@ -82,13 +81,15 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     double? moyMathVerif = double.tryParse(moyMathController.text);
     double moyMath = (moyMathVerif != null) ? moyMathVerif : 0;
     double moyInfo = double.tryParse(moyInfoController.text)!;
-    return Eleve(matricule:
-    matriculeController.text,
+    return Eleve(
+        matricule: matriculeController.text,
         nom: nomController.text,
-        prenoms: prenomController.text,
+        prenom: prenomController.text,
+        dateAnniv: dateController.text,
         moyMath:moyMath,
         moyInfo: moyInfo ,
-        parcours: valueSelectedDropBtn!);
+        parcour: 'valueSelectedDropBtn'
+    );
   }
 
   @override
@@ -309,8 +310,10 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     _formKey.currentState!.save();
                                     noError = true;
                                     try{
-                                      eleveDAO.insertEleve(getEleve());
-                                    }catch(e){
+                                      db.insertEleve(getEleve());
+                                    }catch(e,stackTrace){
+                                      e.toString();
+                                      print('Stack trace:\n$stackTrace');
                                       Fluttertoast.showToast(
                                         msg: 'Matricule déjà attribué !',
                                         toastLength: Toast.LENGTH_LONG,
