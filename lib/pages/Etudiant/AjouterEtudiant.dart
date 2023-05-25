@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-import '../../textinputformatters/CustomMaxValueInputFormatter.dart';
 import '../../textinputformatters/DecimalTextInputFormatter.dart';
 import '../../textinputformatters/NameTextInputFormatter.dart';
 
