@@ -28,6 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   void _onItemTapped(int index) {
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
       _selectedIndex = index;
     });
@@ -36,10 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }else{
       _selectedMenu = _selectedMenuEleve + 4;
     }
-    focusNode.unfocus();
   }
 
   void selectMenu(int menuChoisi){
+    FocusManager.instance.primaryFocus?.unfocus();
     if (_selectedIndex == 0 ){
       _selectedMenuParcour = menuChoisi;
       _selectedMenu = menuChoisi;
@@ -47,16 +48,15 @@ class _MyHomePageState extends State<MyHomePage> {
       _selectedMenuEleve = menuChoisi;
       _selectedMenu = menuChoisi + 4;
     }
-    focusNode.unfocus();
   }
 
   void _onMenuTapped(int indexMenu){
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
       selectMenu(indexMenu);
       //_selectedMenu = indexMenu;
     });
     Navigator.pop(context);
-    focusNode.unfocus();
   }
 
   @override

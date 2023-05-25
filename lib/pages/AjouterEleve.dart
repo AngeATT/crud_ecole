@@ -56,16 +56,16 @@ class _AjouterEleveState extends State<AjouterEleve> {
   String moyInfo = '';
 
   void clearChamps() {
+
     setState(() {
       matriculeController.clear();
       nomController.clear();
       prenomController.clear();
       dateController.value =
-          TextEditingValue(text: "Chosir la date d'anniversaire");
+          TextEditingValue(text: "Choisir la date d'anniversaire");
       classeController.clear();
       moyMathController.clear();
       moyInfoController.clear();
-      valueSelectedDropBtn = "choississez la classe";
     });
   }
 
@@ -97,7 +97,8 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               TextFormField(
                                 controller: matriculeController,
                                 decoration: InputDecoration(
-                                  labelText: 'Matricule',
+                                  hintText: "ex : 1819EN2023", //TODO vérifier le format du matricule à la validation
+                                  label: Text("Matricule"),
                                   border: OutlineInputBorder(),
                                 ),
                                 validator: (value) {
@@ -149,8 +150,8 @@ class _AjouterEleveState extends State<AjouterEleve> {
                                 onTap: () => _selectDate(context),
                                 child: AbsorbPointer(
                                   child: TextFormField(
+                                    keyboardType:  TextInputType.datetime,
                                     controller: dateController,
-                                    keyboardType: TextInputType.datetime,
                                     decoration: InputDecoration(
                                       hintText:
                                           "Choisir la date d'anniversaire",
@@ -164,6 +165,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               ),
                               SizedBox(height: 16.0),
                               DropdownButtonFormField(
+                                hint: Text("Parcour"),
                                   value: valueSelectedDropBtn,
                                   items: _items.map(
                                           (e) => DropdownMenuItem(child: Text(e),value: e)
@@ -200,6 +202,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               ),
                               SizedBox(height: 16.0),
                               TextFormField(
+                                keyboardType:  TextInputType.number,
                                 controller: moyMathController,
                                 decoration: InputDecoration(
                                   labelText: 'Moyenne Math',
@@ -216,6 +219,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                               ),
                               SizedBox(height: 16.0),
                               TextFormField(
+                                keyboardType:  TextInputType.number,
                                 controller: moyInfoController,
                                 decoration: InputDecoration(
                                   labelText: 'Moyenne Info',
