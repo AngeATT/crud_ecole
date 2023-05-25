@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class SupprimerEleve extends StatefulWidget {
+class ModifierParcours extends StatefulWidget {
   @override
-  _SupprimerEleveState createState() => _SupprimerEleveState();
+  _ModifierParcourState createState() => _ModifierParcourState();
 }
 
-class _SupprimerEleveState extends State<SupprimerEleve> {
+class _ModifierParcourState extends State<ModifierParcours> {
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'supprimer eleve',
+        'modifier parcours',
         style: TextStyle(fontSize: 24.0),
       ),
     );
