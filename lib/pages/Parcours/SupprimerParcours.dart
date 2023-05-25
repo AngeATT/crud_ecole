@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class SupprimerParcour extends StatefulWidget {
+class SupprimerParcours extends StatefulWidget {
   @override
-  _SupprimerParcourState createState() => _SupprimerParcourState();
+  _SupprimerParcoursState createState() => _SupprimerParcoursState();
 }
 
-class _SupprimerParcourState extends State<SupprimerParcour> {
+class _SupprimerParcoursState extends State<SupprimerParcours> {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -14,8 +14,5 @@ class _SupprimerParcourState extends State<SupprimerParcour> {
         style: TextStyle(fontSize: 24.0),
       ),
     );
-    }).toList(),
-    onChanged: (String? value) {
-    }));
   }
 }

@@ -1,12 +1,13 @@
+import 'package:crud_ecole/pages/Etudiant/AfficherEtudiant.dart';
+import 'package:crud_ecole/pages/Etudiant/ModifierEtudiant.dart';
+import 'package:crud_ecole/pages/Etudiant/SupprimerEtudiant.dart';
+import 'package:crud_ecole/pages/Parcours/AfficherParcours.dart';
+import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
 import 'package:flutter/material.dart';
-import 'AjouterEleve.dart';
-import 'AjouterParcour.dart';
-import 'ModifierParcour.dart';
-import 'ModifierEleve.dart';
-import 'SupprimerEleve.dart';
-import 'SupprimerParcour.dart';
-import 'AfficherEleve.dart';
-import 'AfficherParcour.dart';
+import '../pages/Etudiant/AjouterEtudiant.dart';
+import '../pages/Parcours/AjouterParcours.dart';
+import '../pages/Parcours/SupprimerParcours.dart';
+
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -14,10 +15,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-  int _selectedMenuParcour = 0;
-  int _selectedMenuEleve = 0;
-  FocusScopeNode focusNode = FocusScopeNode();
   FocusScopeNode focusNode = FocusScopeNode();
   int _selectedTabIndex = 0;
   int _selectedMenu = 0;
