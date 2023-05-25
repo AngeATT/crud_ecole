@@ -10,7 +10,10 @@ import '../pages/Parcours/SupprimerParcours.dart';
 
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _MyHomePageState createState() => _MyHomePageState();
 }
 
@@ -29,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ModifierParcours(),
     SupprimerParcours(),
     AfficherEtudiant(),
-    AjouterEtudiant(),
+    const AjouterEtudiant(),
     ModifierEtudiant(),
     SupprimerEtudiant(),
   ];

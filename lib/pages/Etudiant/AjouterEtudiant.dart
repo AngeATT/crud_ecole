@@ -30,6 +30,17 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
 
   String? valueSelectedDropBtn;
   FocusScopeNode focusScopeNode = FocusScopeNode();
+
+  DateFormat formatter = DateFormat('dd-MM-yyyy');
+
+  Map<int, String> classes = {
+    1: 'Élément 1',
+    2: 'Élément 2',
+    3: 'Élément 3',
+    4: 'Élément 4',
+    5: 'Élément 5'
+  };
+
   final _formKey = GlobalKey<FormState>();
   DateFormat formatter = DateFormat('dd-MM-yyyy');
   DateTime selectedDate = DateTime.now();
@@ -56,14 +67,32 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   TextEditingController moyInfoController = TextEditingController();
   TextEditingController dateController = new TextEditingController();
 
-  String matricule = '';
-  String nom = '';
-  String prenom = '';
-  String classe = '';
+
   String anniv = "";
+  late String matricule;
+  late String nom;
+  late String prenom;
+  DateTime birthdate = DateTime.parse("2000-01-01");
+  late int classe;
   late double moyMath;
   late double moyInfo;
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: birthdate,
+      firstDate: DateTime.parse("1900-01-01"),
+      lastDate: DateTime.now().subtract(
+        const Duration(days: 365 * 10),
+      ),
+    );
+    if (picked != birthdate && picked != null) {
+      setState(() {
+        birthdate = picked;
+        dateController.value = TextEditingValue(text: formatter.format(picked));
+      });
+    }
+  }
   void clearChamps() {
     setState(() {
       matriculeController.clear();
@@ -92,6 +121,26 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     );
   }
 
+
+  TextEditingController dateController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: birthdate,
+      firstDate: DateTime.parse("1900-01-01"),
+      lastDate: DateTime.now().subtract(
+        const Duration(days: 365 * 10),
+      ),
+    );
+    if (picked != birthdate && picked != null) {
+      setState(() {
+        birthdate = picked;
+        dateController.value = TextEditingValue(text: formatter.format(picked));
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,19 +153,27 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                 child: ListView(
                   children: <Widget>[
                     Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Form(
+                        padding: const EdgeInsetsDirectional.only(
+                          start: 16.0,
+                          top: 16.0,
+                          end: 16.0,
+                          bottom: 20.0,
+                        ),
+                        child: Container(
+                            alignment: Alignment.center,
+                            child : Form(
                           key: _formKey,
-                          child: Column(
+                          child: Container(
+                              constraints: const BoxConstraints(maxWidth: 500)
+                            ,child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Center(
-                                child: Text(
-                                  'Saisir infos étudiant',
-                                  style: TextStyle(fontSize: 24.0),
-                                ),
+                              const Text(
+                                'Saisir infos étudiant',
+                                style: TextStyle(fontSize: 24.0),
+                                textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: 20.0),
+                              const SizedBox(height: 20.0),
                               TextFormField(
                                 controller: matriculeController,
                                 textCapitalization: TextCapitalization.characters,
@@ -159,7 +216,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                       : null;
                                 },
                                 onSaved: (value) {
-                                  nom = (value != null) ? value : '';
+                                  nom = (value != null) ? value!.trim() : '';
                                 },
                               ),
                               const SizedBox(height: 16.0),
@@ -182,7 +239,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                       : null;
                                 },
                                 onSaved: (value) {
-                                  prenom = (value != null) ? value : '';
+                                  prenom = (value != null) ? value.trim() : '';
                                 },
                               ),
                               SizedBox(height: 16.0),
@@ -193,37 +250,49 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     keyboardType:  TextInputType.datetime,
                                     controller: dateController,
                                     decoration: InputDecoration(
-                                      hintText:
-                                          "Choisir la date d'anniversaire",
-                                      prefixIcon: Icon(
-                                        Icons.date_range,
-                                        color: Colors.lightBlueAccent,
-                                      ),
+                                      hintText: "Date de naissance",
+                                      suffixIcon: Padding(
+                                        padding: const EdgeInsets.only(left: 22),
+                                        child: Icon(
+                                          Icons.date_range,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
                                     ),
                                   ),
-                                ),
                               ),
                               SizedBox(height: 16.0),
                               DropdownButtonFormField(
+                              items: classes.entries
+                                  .map((MapEntry<int, String> entry) {
+                              return DropdownMenuItem<int>(
+                              value: entry.key,
+                              child: Text(entry.value),
+                              );
+                              }).toList(),
                                 hint: Text("Parcour"),
                                   value: valueSelectedDropBtn,
                                   items: _items.map(
                                           (e) => DropdownMenuItem(child: Text(e),value: e)
                                   ).toList(),
-                                  onChanged: (value){
-                                    setState(() {
-                                      valueSelectedDropBtn = value;
-                                    });
-                                  },
+    onChanged: (value) {
+    setState(() {
+    classe = value!;
+    });
+    },
                                 decoration: InputDecoration(
-                                  labelText: "parcour",
+                                  labelText: "Classe",
                                   border: UnderlineInputBorder()
                                 ),
-                              icon: Icon(
-                                Icons.arrow_drop_down_circle_outlined,
-                                color: Colors.lightBlueAccent,
+    icon: Icon(
+    Icons.arrow_drop_down_circle_outlined,
+    color: Theme.of(context).primaryColor,
+    ),
                               ),
-                              ),
+    validator: (value) {
+    return value == null
+    ? 'Veuillez choisir la classe'
+        : null;
+    },
                               SizedBox(height: 16.0),
                               TextFormField(
                                 controller: moyMathController,
@@ -304,7 +373,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 },
                               ),
                               SizedBox(height: 16.0),
-                              ElevatedButton(
+    const SizedBox(height: 20.0),
+    Container(
+    alignment: Alignment.center,
+    child: SizedBox(
+    width: 200,
+    height: 40,
+    child:ElevatedButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     _formKey.currentState!.save();
