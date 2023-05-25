@@ -5,11 +5,11 @@ import '../../textinputformatters/CustomMaxValueInputFormatter.dart';
 import '../../textinputformatters/DecimalTextInputFormatter.dart';
 import '../../textinputformatters/NameTextInputFormatter.dart';
 
-//TODO : ajouter le bouton, afficher les parcours en fonction des parcours dans la bd, gerer l'insertion dans la bd
 class AjouterEtudiant extends StatefulWidget {
   const AjouterEtudiant({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _AjouterEtudiantState createState() => _AjouterEtudiantState();
 }
 
@@ -35,13 +35,18 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
         child: ListView(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsetsDirectional.only(
+                start: 16.0,
+                top: 16.0,
+                end: 16.0,
+                bottom: 20.0,
+              ),
               child: Container(
                 alignment: Alignment.center,
                 child: Form(
                   key: _formKey,
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 700),
+                    constraints: const BoxConstraints(maxWidth: 500),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
