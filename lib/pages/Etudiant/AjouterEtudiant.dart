@@ -1,5 +1,8 @@
+import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/models/Eleve.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 import '../../textinputformatters/DecimalTextInputFormatter.dart';
@@ -15,6 +18,7 @@ class AjouterEtudiant extends StatefulWidget {
 
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
+  DataBaseCrud db = DataBaseCrud.databaseInstance();
 
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
@@ -26,6 +30,10 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     5: 'Élément 5'
   };
 
+  Eleve getEleve(){
+    return Eleve(matricule: matricule, nom: nom, prenom: prenom, dateAnniv: birthdate.toString(), moyMath: moyMath, moyInfo: moyInfo, classeId: classe);
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   late String matricule;
@@ -35,6 +43,8 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   late int classe;
   late double moyMath;
   late double moyInfo;
+
+  TextEditingController matriculeCOntroller = TextEditingController();
 
   TextEditingController dateController = TextEditingController();
 
@@ -314,14 +324,16 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 FocusManager.instance.primaryFocus?.unfocus();
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
+
+                                  try{
+                                    db.insertEleve(getEleve());
+                                    makeToast("Eleve enregistré");
+                                  }catch(e,printStack){
+                                    print(printStack);
+                                    makeToast("Insertion impossible");
+                                  }
                                   // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
                                   // par exemple, vous pouvez les afficher dans la console :
-                                  debugPrint('Matricule: $matricule');
-                                  debugPrint('Nom: $nom');
-                                  debugPrint('Prénom: $prenom');
-                                  debugPrint('Classe: $classe');
-                                  debugPrint('Moyenne Math: $moyMath');
-                                  debugPrint('Moyenne Info: $moyInfo');
                                 }
                               },
                               child: const Text('Valider'),
@@ -337,6 +349,16 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
           ],
         ),
       ),
+    );
+  }
+  void makeToast(String message){
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.grey[600],
+      textColor: Colors.white,
     );
   }
 }

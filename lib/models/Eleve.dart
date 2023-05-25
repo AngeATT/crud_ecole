@@ -5,7 +5,7 @@ class Eleve {
   final String dateAnniv;
   final double moyMath;
   final double moyInfo;
-  final String parcour;
+  final int classeId;
 
   Eleve({
     required this.matricule,
@@ -14,7 +14,7 @@ class Eleve {
     required this.dateAnniv,
     required this.moyMath,
     required this.moyInfo,
-    required this.parcour});
+    required this.classeId});
 
   Map<String, dynamic> toMap() {
     return {
@@ -24,7 +24,7 @@ class Eleve {
       'dateAnniv': dateAnniv,
       'moyMath': moyMath,
       'moyInfo': moyInfo,
-      'parcour': parcour
+      'classeId': classeId,
     };
   }
 }

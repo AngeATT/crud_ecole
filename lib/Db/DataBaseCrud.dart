@@ -11,7 +11,7 @@ class DataBaseCrud {
   static final String ETUDIANT_COLUMN_NOM = "nom";
   static final String ETUDIANT_COLUMN_PRENOM = "prenom";
   static final String ETUDIANT_COLUMN_ANNIV = "dateAnniv";
-  static final String ETUDIANT_COLUMN_CLASSE_ID = "parcour"; //changer to classeId après
+  static final String ETUDIANT_COLUMN_CLASSE_ID = "classeId"; //changer to classeId après
   static final String ETUDIANT_COLUMN_MATH = "moyMath";
   static final String ETUDIANT_COLUMN_INFO = "moyInfo";
   static final String PARCOURS_TABLE_NAME = "parcour";
@@ -78,7 +78,7 @@ class DataBaseCrud {
           dateAnniv: maps[i]['dateAnniv'],
           moyMath: maps[i]['moyMath'],
           moyInfo: maps[i]['moyInfo'],
-          parcour: maps[i]['parcour'],
+          classeId: maps[i]['classeId'],
         );
       });
     }else{
