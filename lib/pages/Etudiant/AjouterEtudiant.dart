@@ -162,7 +162,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           child: AbsorbPointer(
                             child: TextFormField(
                               autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                                  AutovalidateMode.onUserInteraction,
                               validator: (value) => value!.isEmpty
                                   ? 'Renseignez la date de naissance'
                                   : null,
@@ -219,7 +219,6 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 RegExp(r'[0-9.]')),
                             DecimalTextInputFormatter(),
                             LengthLimitingTextInputFormatter(5),
-                            CustomMaxValueInputFormatter(maxInputValue: 20),
                           ],
                           decoration: const InputDecoration(
                             labelText: 'Moyenne Math',
