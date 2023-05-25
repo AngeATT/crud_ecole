@@ -32,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ModifierParcours(),
     SupprimerParcours(),
     AfficherEtudiant(),
-    const AjouterEtudiant(),
+    AjouterEtudiant(),
     ModifierEtudiant(),
     SupprimerEtudiant(),
   ];
