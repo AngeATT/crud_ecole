@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import '../../textinputformatters/CustomMaxValueInputFormatter.dart';
 import '../../textinputformatters/DecimalTextInputFormatter.dart';
@@ -15,6 +16,9 @@ class AjouterEtudiant extends StatefulWidget {
 
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
+
+  DateFormat formatter = DateFormat('dd-MM-yyyy');
+
   Map<int, String> classes = {
     1: 'Élément 1',
     2: 'Élément 2',
@@ -23,15 +27,34 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     5: 'Élément 5'
   };
 
-  int? valueSelectedDropBtn;
   final _formKey = GlobalKey<FormState>();
 
   late String matricule;
   late String nom;
   late String prenom;
-  late String classe;
+  DateTime birthdate = DateTime.parse("2000-01-01");
+  late int classe;
   late double moyMath;
   late double moyInfo;
+
+  TextEditingController dateController = TextEditingController();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: birthdate,
+      firstDate: DateTime.parse("1900-01-01"),
+      lastDate: DateTime.now().subtract(
+        const Duration(days: 365 * 10),
+      ),
+    );
+    if (picked != birthdate && picked != null) {
+      setState(() {
+        birthdate = picked;
+        dateController.value = TextEditingValue(text: formatter.format(picked));
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +140,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 RegExp(r'[a-zA-Zéèïë ]')),
                             NameTextInputFormatter(),
                           ],
-                          textInputAction: TextInputAction.next,
+                          textInputAction: TextInputAction.done,
                           decoration: const InputDecoration(
                             labelText: 'Prénom',
                             border: OutlineInputBorder(),
@@ -132,8 +155,26 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           },
                         ),
                         const SizedBox(height: 16.0),
+                        GestureDetector(
+                          onTap: () => _selectDate(context),
+                          child: AbsorbPointer(
+                            child: TextFormField(
+                              controller: dateController,
+                              decoration: InputDecoration(
+                                hintText: "Date de naissance",
+                                suffixIcon: Padding(
+                                  padding: const EdgeInsets.only(left: 22),
+                                  child: Icon(
+                                    Icons.date_range,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                              keyboardType: TextInputType.datetime,
+                            ),
+                          ),
+                        ),
                         DropdownButtonFormField(
-                          value: valueSelectedDropBtn,
                           items: classes.entries
                               .map((MapEntry<int, String> entry) {
                             return DropdownMenuItem<int>(
@@ -143,7 +184,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           }).toList(),
                           onChanged: (value) {
                             setState(() {
-                              valueSelectedDropBtn = value;
+                              classe = value!;
                             });
                           },
                           decoration: const InputDecoration(
