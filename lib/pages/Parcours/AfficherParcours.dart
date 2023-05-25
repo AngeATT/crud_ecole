@@ -29,11 +29,11 @@ class _AfficherParcoursState extends State<AfficherParcours> {
               child: Icon(Icons.upgrade),
             ),
             title: Text(
-              'Code Classe',
+              'Code Classe :',
               style: TextStyle(color: Colors.black),
             ),
             subtitle: Text(
-              'Libellé Classe',
+              'Libellé Classe :',
               style: TextStyle(color: Colors.black),
             ),
             trailing: Icon(Icons.delete_forever, color: Colors.grey),
