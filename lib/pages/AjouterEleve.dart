@@ -10,6 +10,16 @@ class AjouterEleve extends StatefulWidget {
 }
 
 class _AjouterEleveState extends State<AjouterEleve> {
+  List<String> _items = [
+    'Élément 1',
+    'Élément 2',
+    'Élément 3',
+    'Élément 4',
+    'Élément 5',
+  ]; //TODO : supprimer cette liste et remplacer par un appel à la bd
+    //TODO : désactiver le formulaire si la table classe est vide
+
+  String? valueSelectedDropBtn;
   DateFormat formatter = DateFormat('dd-MM-yyyy');
   FocusScopeNode focusScopeNode = FocusScopeNode();
   final _formKey = GlobalKey<FormState>();
@@ -55,6 +65,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
       classeController.clear();
       moyMathController.clear();
       moyInfoController.clear();
+      valueSelectedDropBtn = "choississez la classe";
     });
   }
 
@@ -152,6 +163,26 @@ class _AjouterEleveState extends State<AjouterEleve> {
                                 ),
                               ),
                               SizedBox(height: 16.0),
+                              DropdownButtonFormField(
+                                  value: valueSelectedDropBtn,
+                                  items: _items.map(
+                                          (e) => DropdownMenuItem(child: Text(e),value: e)
+                                  ).toList(),
+                                  onChanged: (value){
+                                    setState(() {
+                                      valueSelectedDropBtn = value;
+                                    });
+                                  },
+                                decoration: InputDecoration(
+                                  labelText: "parcour",
+                                  border: UnderlineInputBorder()
+                                ),
+                              icon: Icon(
+                                Icons.arrow_drop_down_circle_outlined,
+                                color: Colors.lightBlueAccent,
+                              ),
+                              ),
+                              SizedBox(height: 16.0),
                               TextFormField(
                                 controller: classeController,
                                 decoration: InputDecoration(
@@ -213,6 +244,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                                     print('Moyenne Math: $moyMath');
                                     print('Moyenne Info: $moyInfo');
                                     //TODO : enregistrer l'éléve et clear les champs si il a été enregistré
+                                    //TODO : vérifier les moyennes, vérifier les regex des noms prenoms etc, vérifier la forme des matricules
                                   }
                                 },
                                 child: Text('Valider'),
