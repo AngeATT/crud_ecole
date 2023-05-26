@@ -1,5 +1,3 @@
-import 'package:crud_ecole/Db/DataBaseCrud.dart';
-import 'package:crud_ecole/models/Eleve.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,17 +17,13 @@ class AjouterEtudiant extends StatefulWidget {
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
-  DataBaseCrud db = DataBaseCrud.databaseInstance();
+  final DataBaseCrud db = DataBaseCrud.databaseInstance();
 
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
-  Map<int, String> classes = {
-    1: 'Élément 1',
-    2: 'Élément 2',
-    3: 'Élément 3',
-    4: 'Élément 4',
-    5: 'Élément 5'
-  };
+  late Map<int, String> classes = {};
+
+  late List<String> mats = [];
 
   Eleve getEleve() {
     return Eleve(
@@ -62,6 +56,20 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
 
   TextEditingController matriculeCOntroller = TextEditingController();
 
+  void fetchmats() async {
+    final datas = await db.getEtudiantsMat();
+    mats = datas;
+  }
+
+  Future<Map<int, String>> fetchclasses() async {
+    final datas = await db.getParcours();
+    classes = datas.fold<Map<int, String>>({}, (map, classe) {
+      map[classe.id] = classe.libelle;
+      return map;
+    });
+    return classes;
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -90,6 +98,14 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
       moyMathController.clear();
       moyInfoController.clear();
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assign data within the initState() method
+    fetchmats();
+    fetchclasses();
   }
 
   @override
@@ -134,9 +150,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
-                          return value!.isEmpty
-                              ? 'Veuillez entrer le matricule'
-                              : null;
+                          if (value!.isEmpty) {
+                            return 'Veuillez entrer le matricule';
+                          } else if (mats.contains(value)) {
+                            return 'Matricule déjà attribué';
+                          } else {
+                            return null;
+                          }
                         },
                         onSaved: (value) {
                           matricule = value!;
@@ -215,33 +235,39 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                           ),
                         ),
                       ),
-                      DropdownButtonFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        items:
-                            classes.entries.map((MapEntry<int, String> entry) {
-                          return DropdownMenuItem<int>(
-                            value: entry.key,
-                            child: Text(entry.value),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            classe = value!;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                            labelText: "Classe",
-                            border: UnderlineInputBorder()),
-                        icon: Icon(
-                          Icons.arrow_drop_down_circle_outlined,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        validator: (value) {
-                          return value == null
-                              ? 'Veuillez choisir la classe'
-                              : null;
-                        },
-                      ),
+    FutureBuilder<Object>(
+    future: fetchclasses(),
+    builder: (context, snapshot) {
+      return DropdownButtonFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        items:
+        classes.entries.map((MapEntry<int, String> entry) {
+          return DropdownMenuItem<int>(
+            value: entry.key,
+            child: Text(entry.value),
+          );
+        }).toList(),
+        onChanged: (value) {
+          setState(() {
+            classe = value!;
+          });
+        },
+        decoration: const InputDecoration(
+            labelText: "Classe",
+            border: UnderlineInputBorder()),
+        icon: Icon(
+          Icons.arrow_drop_down_circle_outlined,
+          color: Theme
+              .of(context)
+              .primaryColor,
+        ),
+        validator: (value) {
+          return value == null
+              ? 'Veuillez choisir la classe'
+              : null;
+        },
+      );
+    }),
                       const SizedBox(height: 16.0),
                       TextFormField(
                         controller: moyMathController,
@@ -346,6 +372,17 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                               FocusManager.instance.primaryFocus?.unfocus();
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
+
+                                db.insertEtudiant(Etudiant(
+                                    matricule: matricule,
+                                    nom: nom,
+                                    prenom: prenom,
+                                    dateAnniv: DateFormat('yyyy-MM-dd')
+                                        .format(birthdate),
+                                    moyMath: moyMath,
+                                    moyInfo: moyInfo,
+                                    classeId: classe));
+                                fetchmats();
 
                                 try {
                                   db.insertEleve(getEleve());

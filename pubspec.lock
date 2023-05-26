@@ -164,13 +164,6 @@ packages:
     source: hosted
     version: "4.1.0"
   path:
-    dependency: "direct main"
-    description:
-      name: path
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.8.2"
-  simple_gesture_detector:
     dependency: transitive
     description:
       name: simple_gesture_detector
@@ -210,6 +203,23 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.11.1"
+    version: "1.9.1"
+  sqflite:
+    dependency: "direct main"
+    description:
+      name: sqflite
+      sha256: b4d6710e1200e96845747e37338ea8a819a12b51689a3bcf31eff0003b37a0b9
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.8+4"
+  sqflite_common:
+    dependency: transitive
+    description:
+      name: sqflite_common
+      sha256: e77abf6ff961d69dfef41daccbb66b51e9983cdd5cb35bf30733598057401555
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.5"
   stack_trace:
     dependency: transitive
     description:
@@ -245,6 +255,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.9"
+    version: "1.2.0"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      sha256: "5fcbd27688af6082f5abd611af56ee575342c30e87541d0245f7ff99faa02c60"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.0"
   term_glyph:
     dependency: transitive
     description:
@@ -274,5 +293,5 @@ packages:
     source: hosted
     version: "2.1.2"
 sdks:
-  dart: ">=2.18.6 <3.0.0"
-  flutter: ">=3.3.0"
+  dart: ">=3.0.0-417 <4.0.0"
+  flutter: ">=1.10.0"

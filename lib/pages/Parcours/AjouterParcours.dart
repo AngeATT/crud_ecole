@@ -1,9 +1,8 @@
-
+import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../textinputformatters/CustomMaxValueInputFormatter.dart';
-import '../../textinputformatters/DecimalTextInputFormatter.dart';
 import '../../textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterParcours extends StatefulWidget {
@@ -13,10 +12,29 @@ class AjouterParcours extends StatefulWidget {
 
 class _AjouterParcoursState extends State<AjouterParcours> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
+
+  final DataBaseCrud db = DataBaseCrud.databaseInstance();
+
+  late List<String> classes;
+
   final _formKey = GlobalKey<FormState>();
 
-  late String code_classe;
-  late String libelle_Classe;
+  late String libelle;
+
+  TextEditingController libelleController = TextEditingController();
+
+  Future<List<String>> fetchdatas() async {
+    final datas = await db.getParcoursLibelle();
+    classes = datas;
+    return classes;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assign data within the initState() method
+    fetchdatas();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,62 +63,46 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Text(
-                          'Saisir Parcours Etudiant',
+                          'Saisir Classe',
                           style: TextStyle(fontSize: 24.0),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(
                           height: 20.0,
                         ),
-                        TextFormField(
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9.]')),
-                            DecimalTextInputFormatter(),
-                            LengthLimitingTextInputFormatter(1),
-                          ],
-                          textInputAction: TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Code Classe',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Veuillez entrer le Code';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            code_classe = value!;
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-                        TextFormField(
-                          keyboardType: TextInputType.text,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[a-zA-Zéèïë ]')),
-                            NameTextInputFormatter(),
-                            LengthLimitingTextInputFormatter(5),
-                          ],
-                          textInputAction: TextInputAction.next,
-                          decoration: const InputDecoration(
-                            labelText: 'Libellé Classe',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Veuillez entrer le Libellé';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            libelle_Classe = value!;
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-
+                        FutureBuilder<Object>(
+                            future: fetchdatas(),
+                            builder: (context, snapshot) {
+                              return TextFormField(
+                                controller: libelleController,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9a-zA-Zé ]')),
+                                  NameTextInputFormatter(),
+                                ],
+                                textInputAction: TextInputAction.done,
+                                decoration: const InputDecoration(
+                                  labelText: 'Libellé classe',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Veuillez entrer le Libellé';
+                                  } else if (classes.contains(value.trim())) {
+                                    return 'Le libellé doit être unique';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                onSaved: (value) {
+                                  libelle = value!.trim();
+                                },
+                              );
+                            }),
                         const SizedBox(height: 20.0),
                         Container(
                           alignment: Alignment.center,
@@ -109,12 +111,15 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                             height: 40,
                             child: ElevatedButton(
                               onPressed: () {
+                                FocusManager.instance.primaryFocus?.unfocus();
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
-                                  // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
-                                  // par exemple, vous pouvez les afficher dans la console :
-                                  debugPrint('Code Classe: $code_classe');
-                                  debugPrint('Code Classe: $libelle_Classe');
+                                  db.insertParcours(
+                                      Parcours(id: 0, libelle: libelle));
+                                  setState(() {
+                                    fetchdatas();
+                                  });
+                                  libelleController.clear();
                                 }
                               },
                               child: const Text('Valider'),
