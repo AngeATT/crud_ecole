@@ -1,7 +1,9 @@
+import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import '../../Db/DataBaseCrud.dart';
 import '../../textinputformatters/DecimalTextInputFormatter.dart';
 import '../../textinputformatters/NameTextInputFormatter.dart';
 
@@ -16,15 +18,13 @@ class AjouterEtudiant extends StatefulWidget {
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
+  final DataBaseCrud db = DataBaseCrud.databaseInstance();
+
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
-  Map<int, String> classes = {
-    1: 'Élément 1',
-    2: 'Élément 2',
-    3: 'Élément 3',
-    4: 'Élément 4',
-    5: 'Élément 5'
-  };
+  late Map<int, String> classes = {};
+
+  late List<String> mats = [];
 
   final _formKey = GlobalKey<FormState>();
 
@@ -37,6 +37,20 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   late double moyInfo;
 
   TextEditingController dateController = TextEditingController();
+
+  void fetchmats() async {
+    final datas = await db.getEtudiantsMat();
+    mats = datas;
+  }
+
+  Future<Map<int, String>> fetchclasses() async {
+    final datas = await db.getParcours();
+    classes = datas.fold<Map<int, String>>({}, (map, classe) {
+      map[classe.id] = classe.libelle;
+      return map;
+    });
+    return classes;
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -53,6 +67,14 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
         dateController.value = TextEditingValue(text: formatter.format(picked));
       });
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assign data within the initState() method
+    fetchmats();
+    fetchclasses();
   }
 
   @override
@@ -102,9 +124,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
-                            return value!.isEmpty
-                                ? 'Veuillez entrer le matricule'
-                                : null;
+                            if (value!.isEmpty) {
+                              return 'Veuillez entrer le matricule';
+                            } else if (mats.contains(value)) {
+                              return 'Matricule déjà attribué';
+                            } else {
+                              return null;
+                            }
                           },
                           onSaved: (value) {
                             matricule = value!;
@@ -181,33 +207,38 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             ),
                           ),
                         ),
-                        DropdownButtonFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          items: classes.entries
-                              .map((MapEntry<int, String> entry) {
-                            return DropdownMenuItem<int>(
-                              value: entry.key,
-                              child: Text(entry.value),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              classe = value!;
-                            });
-                          },
-                          decoration: const InputDecoration(
-                              labelText: "Classe",
-                              border: UnderlineInputBorder()),
-                          icon: Icon(
-                            Icons.arrow_drop_down_circle_outlined,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          validator: (value) {
-                            return value == null
-                                ? 'Veuillez choisir la classe'
-                                : null;
-                          },
-                        ),
+                        FutureBuilder<Object>(
+                            future: fetchclasses(),
+                            builder: (context, snapshot) {
+                              return DropdownButtonFormField(
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                items: classes.entries
+                                    .map((MapEntry<int, String> entry) {
+                                  return DropdownMenuItem<int>(
+                                    value: entry.key,
+                                    child: Text(entry.value),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    classe = value!;
+                                  });
+                                },
+                                decoration: const InputDecoration(
+                                    labelText: "Classe",
+                                    border: UnderlineInputBorder()),
+                                icon: Icon(
+                                  Icons.arrow_drop_down_circle_outlined,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                validator: (value) {
+                                  return value == null
+                                      ? 'Veuillez choisir la classe'
+                                      : null;
+                                },
+                              );
+                            }),
                         const SizedBox(height: 16.0),
                         TextFormField(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -314,8 +345,16 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 FocusManager.instance.primaryFocus?.unfocus();
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
-                                  // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
-                                  // par exemple, vous pouvez les afficher dans la console :
+                                  db.insertEtudiant(Etudiant(
+                                      matricule: matricule,
+                                      nom: nom,
+                                      prenom: prenom,
+                                      dateAnniv: DateFormat('yyyy-MM-dd')
+                                          .format(birthdate),
+                                      moyMath: moyMath,
+                                      moyInfo: moyInfo,
+                                      classeId: classe));
+                                  fetchmats();
                                   debugPrint('Matricule: $matricule');
                                   debugPrint('Nom: $nom');
                                   debugPrint('Prénom: $prenom');

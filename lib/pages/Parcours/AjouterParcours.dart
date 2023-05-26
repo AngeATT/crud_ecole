@@ -1,3 +1,5 @@
+import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -11,11 +13,28 @@ class AjouterParcours extends StatefulWidget {
 class _AjouterParcoursState extends State<AjouterParcours> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
-  static const List<String> classes = ['Prépa 1'];
+  final DataBaseCrud db = DataBaseCrud.databaseInstance();
+
+  late List<String> classes;
 
   final _formKey = GlobalKey<FormState>();
 
   late String libelle;
+
+  TextEditingController libelleController = TextEditingController();
+
+  Future<List<String>> fetchdatas() async {
+    final datas = await db.getParcoursLibelle();
+    classes = datas;
+    return classes;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assign data within the initState() method
+    fetchdatas();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,32 +70,39 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                         const SizedBox(
                           height: 20.0,
                         ),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          textCapitalization: TextCapitalization.sentences,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9a-zA-Zé ]')),
-                            NameTextInputFormatter(),
-                          ],
-                          textInputAction: TextInputAction.done,
-                          decoration: const InputDecoration(
-                            labelText: 'Libellé classe',
-                            border: OutlineInputBorder(),
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Veuillez entrer le Libellé';
-                            } else if (classes.contains(value.trim())) {
-                              return 'Le libellé doit être unique';
-                            } else {
-                              return null;
-                            }
-                          },
-                          onSaved: (value) {
-                            libelle = value!.trim();
-                          },
-                        ),
+                        FutureBuilder<Object>(
+                            future: fetchdatas(),
+                            builder: (context, snapshot) {
+                              return TextFormField(
+                                controller: libelleController,
+                                autovalidateMode:
+                                    AutovalidateMode.onUserInteraction,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9a-zA-Zé ]')),
+                                  NameTextInputFormatter(),
+                                ],
+                                textInputAction: TextInputAction.done,
+                                decoration: const InputDecoration(
+                                  labelText: 'Libellé classe',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Veuillez entrer le Libellé';
+                                  } else if (classes.contains(value.trim())) {
+                                    return 'Le libellé doit être unique';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                onSaved: (value) {
+                                  libelle = value!.trim();
+                                },
+                              );
+                            }),
                         const SizedBox(height: 20.0),
                         Container(
                           alignment: Alignment.center,
@@ -88,7 +114,12 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                 FocusManager.instance.primaryFocus?.unfocus();
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
-                                  debugPrint('libelle: $libelle');
+                                  db.insertParcours(
+                                      Parcours(id: 0, libelle: libelle));
+                                  setState(() {
+                                    fetchdatas();
+                                  });
+                                  libelleController.clear();
                                 }
                               },
                               child: const Text('Valider'),
