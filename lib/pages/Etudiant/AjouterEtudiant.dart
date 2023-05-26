@@ -362,6 +362,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             width: 200,
                             height: 40,
                             child: ElevatedButton(
+                                child: const Text('Valider'),
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   FocusManager.instance.primaryFocus?.unfocus();
@@ -386,11 +387,10 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                 // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
                                 // par exemple, vous pouvez les afficher dans la console :
                               }
-                            },
-                            child: const Text('Valider'),
+    ),
+
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -398,19 +398,9 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.clear,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          clearChamps();
-          },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
+      )
+    )
+  );}
 
   void makeToast(String message) {
     Fluttertoast.showToast(
