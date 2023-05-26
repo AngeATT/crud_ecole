@@ -79,57 +79,64 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
                 ],
               ),
               const SizedBox(height: 16.0),
-              FutureBuilder<Object>(
-                future: getParcours(),
-                builder: (context, asyncsnapshot) {
-                    // While waiting for the data to load, display a loading indicator
-                    return ListView.builder(
-                        itemCount: parcours.length, //taille de notre tab
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Card(
-                            color: Colors.white,
-                            elevation: 2.0,
-                            child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.blueGrey,
-                                  child: Icon(Icons.upgrade),
-                                ),
-                                title: Text(
-                                  'Libelle : ${parcours[index].libelle}',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                trailing: Container(
-                                  height: 50,
-                                  width: 112,
-                                  child: ButtonBar(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          IconButton(
-                                              icon: Icon(Icons.edit),
-                                              onPressed: () {
-                                                //TODO : renvoyer sur la page de modification d'un parcour
-                                              }),
-                                          IconButton(
-                                            onPressed: () {
-                                              db.deleteParcour(parcours[index]);
-                                              // Action à effectuer lors du clic sur le bouton
-                                              //TODO : appeler supprimer, demander la confirmation, supprimer, envoyer un toast
-                                            },
-                                            icon: Icon(Icons.delete),
-                                            color: Colors.red,
-                                          ),
-                                        ],
-                                      )
-                                    ],
+              ListView(
+                padding: const EdgeInsetsDirectional.all(2),
+                shrinkWrap: true,
+                children: [
+                  FutureBuilder<Object>(
+                    future: getParcours(),
+                    builder: (context, asyncsnapshot) {
+                      // While waiting for the data to load, display a loading indicator
+                      return ListView.builder(
+                          itemCount: parcours.length, //taille de notre tab
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Card(
+                              color: Colors.white,
+                              elevation: 2.0,
+                              child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.blueGrey,
+                                    child: Icon(Icons.upgrade),
                                   ),
-                                )),
-                          );
-                        });
-                  }
-    ,
+                                  title: Text(
+                                    'Libelle : ${parcours[index].libelle}',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                  trailing: Container(
+                                    height: 50,
+                                    width: 112,
+                                    child: ButtonBar(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            IconButton(
+                                                icon: Icon(Icons.edit),
+                                                onPressed: () {
+                                                  //TODO : renvoyer sur la page de modification d'un parcour
+                                                }),
+                                            IconButton(
+                                              onPressed: () {
+                                                db.deleteParcour(parcours[index]);
+                                                // Action à effectuer lors du clic sur le bouton
+                                                //TODO : appeler supprimer, demander la confirmation, supprimer, envoyer un toast
+                                              },
+                                              icon: Icon(Icons.delete),
+                                              color: Colors.red,
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  )),
+                            );
+                          });
+                    }
+                    ,
+                  )
+                ],
               )
+              
             ],
           ),
         ),

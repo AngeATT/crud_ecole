@@ -112,6 +112,23 @@ class DataBaseCrud {
     }
   }
 
+  Future<List<Parcours>> getParcoursWithPattern(String s) async{
+    if (db == null) {
+      initializedDB();
+    }
+    final List<Map<String, dynamic>>? maps =  await db?.rawQuery(
+        "Select * from"+ PARCOURS_TABLE_NAME + "where " +CLASSE_COLUMN_LIBELLE+" LIKE %"+s+"%;"
+    );
+    if (maps != null) {
+      return List.generate(maps.length, (i) {
+        return Parcours(
+            id: maps[i]['id'], libelle: maps[i][CLASSE_COLUMN_LIBELLE]);
+      });
+    } else {
+      return [];
+    };
+  }
+
   Future<List<Parcours>> getParcours() async {
     if (db == null) {
       initializedDB();
