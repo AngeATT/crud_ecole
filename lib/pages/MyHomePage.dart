@@ -5,10 +5,7 @@ import 'package:crud_ecole/pages/Etudiant/SupprimerEtudiant.dart';
 import 'package:crud_ecole/pages/Parcours/AfficherParcours.dart';
 import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
 import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
-import 'package:crud_ecole/pages/Parcours/SupprimerParcours.dart';
 import 'package:flutter/material.dart';
-import '../pages/Etudiant/AjouterEtudiant.dart';
-import '../pages/Parcours/AjouterParcours.dart';
 import '../pages/Parcours/SupprimerParcours.dart';
 
 
@@ -110,7 +107,9 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('CRUD ECOLE'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: add,
+        onPressed: (){
+          
+        },
         child: const Icon(Icons.add),
       ),
       drawer: Drawer(
