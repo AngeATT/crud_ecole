@@ -9,6 +9,8 @@ import 'AfficherEleve.dart';
 import 'AfficherParcour.dart';
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -18,10 +20,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedMenu = 0;
 
   static List <List<Widget>> pages = <List<Widget>>[ //gere laffichage des menus
-    [AjouterParcour(),AjouterEleve()],
-    [ModifierParcour(),ModifierEleve()],
-    [SupprimerParcour(),SupprimerEleve()],
-    [AfficherParcour(),AfficherEleve()]
+    [const AjouterParcour(),const AjouterEleve()],
+    [const ModifierParcour(),const ModifierEleve()],
+    [const SupprimerParcour(),const SupprimerEleve()],
+    [const AfficherParcour(),const AfficherEleve()]
 
   ];
   void _onItemTapped(int index) {
@@ -41,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('CRUD ECOLE')),
+        title: const Center(child: Text('CRUD ECOLE')),
         centerTitle: true,
       ),
       drawer: Drawer(
@@ -51,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListView(
             children: [
               Container(
-                child: DrawerHeader(
+                child: const DrawerHeader(
                     child: Center(
                         child: Text(
                           'ACCEUIL',
@@ -61,12 +63,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.add,
                   size: 40,
                   shadows: [],
                 ),
-                title: Text(
+                title: const Text(
                   'Ajouter',
                   style: TextStyle(fontSize: 18),
                 ),
@@ -75,10 +77,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                     Icons.edit
                 ),
-                title: Text(
+                title: const Text(
                     'Modifier',
                     style: TextStyle(fontSize: 18)
                 ),
@@ -87,10 +89,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                     Icons.delete
                 ),
-                title: Text(
+                title: const Text(
                     'Supprimer',
                     style: TextStyle(fontSize: 18)
                 ),
@@ -99,10 +101,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                     Icons.list_alt_sharp
                 ),
-                title: Text(
+                title: const Text(
                     'Afficher',
                     style: TextStyle(fontSize: 18)
                 ),
@@ -139,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         return pages[indexMenu][1];
       default:
-        return Center(child: Text('Page inconnue'));
+        return const Center(child: Text('Page inconnue'));
     }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //TODO : ajouter le bouton, afficher les parcours en fonction des parcours dans la bd, gerer l'insertion dans la bd
 class AjouterEleve extends StatefulWidget {
-  AjouterEleve({Key? key}) : super(key: key);
+  const AjouterEleve({Key? key}) : super(key: key);
 
   @override
   _AjouterEleveState createState() => _AjouterEleveState();
@@ -32,15 +32,15 @@ class _AjouterEleveState extends State<AjouterEleve> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'Saisir infos étudiant',
               style: TextStyle(fontSize: 24.0),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Row(
               children: [
-                Text('Matricule:'),
-                SizedBox(width: 10.0),
+                const Text('Matricule:'),
+                const SizedBox(width: 10.0),
                 Expanded(
                   child: TextField(
                     controller: matriculeController,
@@ -48,11 +48,11 @@ class _AjouterEleveState extends State<AjouterEleve> {
                 ),
               ],
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Row(
               children: [
-                Text('Nom:'),
-                SizedBox(width: 10.0),
+                const Text('Nom:'),
+                const SizedBox(width: 10.0),
                 Expanded(
                   child: TextField(
                     controller: nomController,
@@ -60,11 +60,11 @@ class _AjouterEleveState extends State<AjouterEleve> {
                 ),
               ],
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Row(
               children: [
-                Text('Prénom:'),
-                SizedBox(width: 10.0),
+                const Text('Prénom:'),
+                const SizedBox(width: 10.0),
                 Expanded(
                   child: TextField(
                     controller: prenomController,
@@ -72,11 +72,11 @@ class _AjouterEleveState extends State<AjouterEleve> {
                 ),
               ],
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Row(
               children: [
-                Text('Classe:'),
-                SizedBox(width: 10.0),
+                const Text('Classe:'),
+                const SizedBox(width: 10.0),
                 Expanded(
                   child: TextField(
                     controller: classeController,
@@ -84,11 +84,11 @@ class _AjouterEleveState extends State<AjouterEleve> {
                 ),
               ],
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Row(
               children: [
-                Text('Moy Math:'),
-                SizedBox(width: 10.0),
+                const Text('Moy Math:'),
+                const SizedBox(width: 10.0),
                 Expanded(
                   child: TextField(
                     controller: moyMathController,
@@ -96,11 +96,11 @@ class _AjouterEleveState extends State<AjouterEleve> {
                 ),
               ],
             ),
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             Row(
               children: [
-                Text('Moy Info:'),
-                SizedBox(width: 10.0),
+                const Text('Moy Info:'),
+                const SizedBox(width: 10.0),
                 Expanded(
                   child: TextField(
                     controller: moyInfoController,
@@ -108,7 +108,7 @@ class _AjouterEleveState extends State<AjouterEleve> {
                 ),
               ],
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
           ],
         ),
     );
