@@ -72,19 +72,30 @@ class _AfficherParcoursState extends State<AfficherParcours> {
                         ),
                         trailing: Container(
                             height: 50,
-                            width: 60,
-                            alignment: Alignment.center,
+                            width: 112,
                             child: ButtonBar(
                                 children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      // Action à effectuer lors du clic sur le bouton
-                                    },
-                                    icon: Icon(
-                                        Icons.delete
-                                    ),
-                                  ),
-
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.edit),
+                                        onPressed: (){
+                                          //TODO : renvoyer sur la page de modification d'un parcour
+                                        },
+                                        color: Colors.limeAccent,
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          // Action à effectuer lors du clic sur le bouton
+                                          //TODO : appeler supprimer, demander la confirmation, supprimer, envoyer un toast
+                                        },
+                                        icon: Icon(
+                                            Icons.delete
+                                        ),
+                                        color: Colors.red,
+                                      ),
+                                    ],
+                                  )
                                 ],
                               ),
                             )
