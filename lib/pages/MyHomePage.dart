@@ -1,8 +1,11 @@
 import 'package:crud_ecole/pages/Etudiant/AfficherEtudiant.dart';
+import 'package:crud_ecole/pages/Etudiant/AjouterEtudiant.dart';
 import 'package:crud_ecole/pages/Etudiant/ModifierEtudiant.dart';
 import 'package:crud_ecole/pages/Etudiant/SupprimerEtudiant.dart';
 import 'package:crud_ecole/pages/Parcours/AfficherParcours.dart';
+import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
 import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
+import 'package:crud_ecole/pages/Parcours/SupprimerParcours.dart';
 import 'package:flutter/material.dart';
 import '../pages/Etudiant/AjouterEtudiant.dart';
 import '../pages/Parcours/AjouterParcours.dart';
@@ -21,7 +24,6 @@ class _MyHomePageState extends State<MyHomePage> {
   FocusScopeNode focusNode = FocusScopeNode();
   int _selectedTabIndex = 0;
   int _selectedMenu = 0;
-
   int _parcoursMenuIndex = 0;
   int _etudiantMenuIndex = 0;
 
@@ -32,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ModifierParcours(),
     SupprimerParcours(),
     AfficherEtudiant(),
-    AjouterEtudiant(),
+    const AjouterEtudiant(),
     ModifierEtudiant(),
     SupprimerEtudiant(),
   ];
@@ -107,6 +109,10 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
         title: const Text('CRUD ECOLE'),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: add,
+        child: const Icon(Icons.add),
+      ),
       drawer: Drawer(
         child: ListView(
           children: [
@@ -152,9 +158,17 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      body:  Container(
+      body: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            focusNode.unfocus();
+          },
+          child: FocusScope(
+            node: focusNode,
+            child: Center(
               child: IndexedStack(index: _selectedMenu, children: allPages),
             ),
+          )),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -168,6 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: _selectedTabIndex,
         onTap: _onTabSelected,
-      ));
+      ),
+    );
   }
 }

@@ -6,7 +6,10 @@ import 'package:flutter/services.dart';
 import '../../textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterParcours extends StatefulWidget {
+  const AjouterParcours({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _AjouterParcoursState createState() => _AjouterParcoursState();
 }
 
@@ -62,13 +65,8 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          'Saisir Classe',
-                          style: TextStyle(fontSize: 24.0),
-                          textAlign: TextAlign.center,
-                        ),
                         const SizedBox(
-                          height: 20.0,
+                          height: 5.0,
                         ),
                         FutureBuilder<Object>(
                             future: fetchdatas(),
@@ -119,7 +117,10 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                   setState(() {
                                     fetchdatas();
                                   });
-                                  libelleController.clear();
+                                  _formKey.currentState!.reset();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Classe ajoutée')));
                                 }
                               },
                               child: const Text('Valider'),
