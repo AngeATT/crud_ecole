@@ -354,13 +354,10 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                       moyMath: moyMath,
                                       moyInfo: moyInfo,
                                       classeId: classe));
-                                  fetchmats();
-                                  debugPrint('Matricule: $matricule');
-                                  debugPrint('Nom: $nom');
-                                  debugPrint('Prénom: $prenom');
-                                  debugPrint('Classe: $classe');
-                                  debugPrint('Moyenne Math: $moyMath');
-                                  debugPrint('Moyenne Info: $moyInfo');
+                                  setState(() {
+                                    fetchmats();
+                                  });
+                                  _formKey.currentState!.reset();
                                 }
                               },
                               child: const Text('Valider'),

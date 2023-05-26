@@ -120,6 +120,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                     fetchdatas();
                                   });
                                   libelleController.clear();
+                                  _formKey.currentState!.reset();
                                 }
                               },
                               child: const Text('Valider'),
