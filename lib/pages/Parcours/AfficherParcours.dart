@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'AjouterParcours.dart';
 
 class AfficherParcours extends StatefulWidget {
+
+
   @override
   _AfficherParcoursState createState() => _AfficherParcoursState();
 }
 
 class _AfficherParcoursState extends State<AfficherParcours> {
-  int count = 0;
+  int count = 4;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: getAfficherParcourView(), // fonction permettant d'afficher la liste de tout les parcours dans le body
+      body: getAfficherParcourView(),
+
     );
   }
-  //paramétrage de la fonction
 
   getAfficherParcourView() {
     return ListView.builder(
@@ -29,11 +32,11 @@ class _AfficherParcoursState extends State<AfficherParcours> {
               child: Icon(Icons.upgrade),
             ),
             title: Text(
-              'Code Classe :',
+              'Code Classe : ',
               style: TextStyle(color: Colors.black),
             ),
             subtitle: Text(
-              'Libellé Classe :',
+              'Libellé Classe : ',
               style: TextStyle(color: Colors.black),
             ),
             trailing: Icon(Icons.delete_forever, color: Colors.grey),
@@ -42,5 +45,4 @@ class _AfficherParcoursState extends State<AfficherParcours> {
       },
     );
   }
-
 }

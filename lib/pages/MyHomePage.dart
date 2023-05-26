@@ -22,7 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _parcoursMenuIndex = 0;
   int _etudiantMenuIndex = 0;
 
-  final headertitles = <String>['Parcours', 'Etudiants'];
+  final headerTitles = <String>['Parcours', 'Etudiants'];
   static List<Widget> allPages = <Widget>[
     AfficherParcours(),
     AjouterParcours(),
@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
             DrawerHeader(
               child: Center(
                 child: Text(
-                  headertitles[_selectedTabIndex],
+                  headerTitles[_selectedTabIndex],
                   style: const TextStyle(fontSize: 25),
                 ),
               ),
@@ -164,11 +164,11 @@ class _MyHomePageState extends State<MyHomePage> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: const Icon(Icons.school),
-            label: headertitles[0],
+            label: headerTitles[0],
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.person),
-            label: headertitles[1],
+            label: headerTitles[1],
           )
         ],
         currentIndex: _selectedTabIndex,

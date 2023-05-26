@@ -7,7 +7,7 @@ class AfficherEtudiant extends StatefulWidget {
 
 class _AfficherEtudiantState extends State<AfficherEtudiant> {
   @override
-  int count = 0;
+  int count = 4;
   Widget build(BuildContext context) {
     return Scaffold(
       body: getAfficherParcourView(), // fonction permettant d'afficher la liste de tout les parcours dans le body

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../textinputformatters/CustomMaxValueInputFormatter.dart';
 import '../../textinputformatters/DecimalTextInputFormatter.dart';
 import '../../textinputformatters/NameTextInputFormatter.dart';
+import 'AfficherParcours.dart';
 
 class AjouterParcours extends StatefulWidget {
   @override
@@ -16,6 +17,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
 
   late String code_classe;
   late String libelle_Classe;
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +56,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                         TextFormField(
                           keyboardType: TextInputType.number,
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9.]')),
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                             DecimalTextInputFormatter(),
                             LengthLimitingTextInputFormatter(1),
                           ],
@@ -78,8 +79,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                         TextFormField(
                           keyboardType: TextInputType.text,
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[a-zA-Zéèïë ]')),
+                            FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Zéèïë ]')),
                             NameTextInputFormatter(),
                             LengthLimitingTextInputFormatter(5),
                           ],
@@ -99,7 +99,6 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                           },
                         ),
                         const SizedBox(height: 16.0),
-
                         const SizedBox(height: 20.0),
                         Container(
                           alignment: Alignment.center,
@@ -110,10 +109,8 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
-                                  // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
-                                  // par exemple, vous pouvez les afficher dans la console :
                                   debugPrint('Code Classe: $code_classe');
-                                  debugPrint('Code Classe: $libelle_Classe');
+                                  debugPrint('Libellé Classe: $libelle_Classe');
                                 }
                               },
                               child: const Text('Valider'),
