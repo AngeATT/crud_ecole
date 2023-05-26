@@ -26,17 +26,6 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
 
   late List<String> mats = [];
 
-  Etudiant getEleve() {
-    return Etudiant(
-        matricule: matricule,
-        nom: nom,
-        prenom: prenom,
-        dateAnniv: birthdate.toString(),
-        moyMath: moyMath,
-        moyInfo: moyInfo,
-        classeId: classe);
-  }
-
   final _formKey = GlobalKey<FormState>();
 
   late String matricule;
@@ -374,8 +363,8 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             height: 40,
                             child: ElevatedButton(
                               onPressed: () {
-                                FocusManager.instance.primaryFocus?.unfocus();
                                 if (_formKey.currentState!.validate()) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                   _formKey.currentState!.save();
                                   db.insertEtudiant(Etudiant(
                                       matricule: matricule,
@@ -386,12 +375,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                       moyMath: moyMath,
                                       moyInfo: moyInfo,
                                       classeId: classe));
-    setState(() {
-    fetchmats();
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-    content: Text('Etudiant ajoutée')));
+                                  setState(() {
+                                    fetchmats();
+                                  });
+                                  _formKey.currentState!.reset();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Etudiant ajouté')));
                                 }
                                 // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
                                 // par exemple, vous pouvez les afficher dans la console :

@@ -5,9 +5,8 @@ import 'package:crud_ecole/pages/Etudiant/SupprimerEtudiant.dart';
 import 'package:crud_ecole/pages/Parcours/AfficherParcours.dart';
 import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
 import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
+import 'package:crud_ecole/pages/Parcours/SupprimerParcours.dart';
 import 'package:flutter/material.dart';
-import '../pages/Parcours/SupprimerParcours.dart';
-
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -97,7 +96,39 @@ class _MyHomePageState extends State<MyHomePage> {
     selectMenu();
   }
 
-  void clear() {}
+  void add() {
+    Widget widget;
+    double size;
+    if (_selectedTabIndex == 0) {
+      widget = AjouterParcours();
+      size = 200;
+    } else {
+      widget = AjouterEtudiant();
+      size = MediaQuery.of(context).size.height - 500;
+    }
+    showModalBottomSheet(
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(40.0))),
+        context: context,
+        builder: (BuildContext context) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              //height: size,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: size,
+                    child: widget,
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,9 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('CRUD ECOLE'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          
-        },
+        onPressed: add,
         child: const Icon(Icons.add),
       ),
       drawer: Drawer(
