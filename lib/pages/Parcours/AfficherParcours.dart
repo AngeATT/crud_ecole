@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../../Db/DataBaseCrud.dart';
 import '../../customwidgets/EtudiantCard.dart';
-import '../../models/Etudiant.dart';
 
 class AfficherParcours extends StatefulWidget {
   @override
