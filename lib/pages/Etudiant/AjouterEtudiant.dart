@@ -103,13 +103,8 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          'Saisir infos étudiant',
-                          style: TextStyle(fontSize: 24.0),
-                          textAlign: TextAlign.center,
-                        ),
                         const SizedBox(
-                          height: 20.0,
+                          height: 5.0,
                         ),
                         TextFormField(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -358,6 +353,9 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     fetchmats();
                                   });
                                   _formKey.currentState!.reset();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text('Etudiant ajoutée')));
                                 }
                               },
                               child: const Text('Valider'),

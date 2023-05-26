@@ -96,7 +96,18 @@ class _MyHomePageState extends State<MyHomePage> {
     selectMenu();
   }
 
-  void clear() {}
+  void add() {
+    showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(40.0))),
+        context: context,
+        builder: (BuildContext context) {
+          return SizedBox(
+            height: MediaQuery.of(context).size.height - 100,
+            child: const AjouterEtudiant(),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +117,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: const Text('CRUD ECOLE'),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: clear,
-        child: const Icon(Icons.clear),
+        onPressed: add,
+        child: const Icon(Icons.add),
       ),
       drawer: Drawer(
         child: ListView(
