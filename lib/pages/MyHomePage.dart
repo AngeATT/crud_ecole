@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
       size = 200;
     } else {
       widget = AjouterEtudiant();
-      size = MediaQuery.of(context).size.height - 500;
+      size = MediaQuery.of(context).size.height - 450;
     }
     showModalBottomSheet(
         isScrollControlled: true,
