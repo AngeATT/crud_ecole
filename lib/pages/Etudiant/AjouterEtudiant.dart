@@ -337,8 +337,8 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             height: 40,
                             child: ElevatedButton(
                               onPressed: () {
-                                FocusManager.instance.primaryFocus?.unfocus();
                                 if (_formKey.currentState!.validate()) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                   _formKey.currentState!.save();
                                   db.insertEtudiant(Etudiant(
                                       matricule: matricule,
@@ -355,7 +355,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                   _formKey.currentState!.reset();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
-                                          content: Text('Etudiant ajoutée')));
+                                          content: Text('Etudiant ajouté')));
                                 }
                               },
                               child: const Text('Valider'),

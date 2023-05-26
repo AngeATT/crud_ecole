@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final headertitles = <String>['Parcours', 'Etudiants'];
   static List<Widget> allPages = <Widget>[
     AfficherParcours(),
-    AjouterParcours(),
+    const AjouterParcours(),
     ModifierParcours(),
     SupprimerParcours(),
     AfficherEtudiant(),
@@ -97,14 +97,35 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void add() {
+    Widget widget;
+    double size;
+    if (_selectedTabIndex == 0) {
+      widget = AjouterParcours();
+      size = 200;
+    } else {
+      widget = AjouterEtudiant();
+      size = MediaQuery.of(context).size.height - 500;
+    }
     showModalBottomSheet(
+        isScrollControlled: true,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(40.0))),
         context: context,
         builder: (BuildContext context) {
-          return SizedBox(
-            height: MediaQuery.of(context).size.height - 100,
-            child: const AjouterEtudiant(),
+          return SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              //height: size,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: size,
+                    child: widget,
+                  ),
+                ],
+              ),
+            ),
           );
         });
   }

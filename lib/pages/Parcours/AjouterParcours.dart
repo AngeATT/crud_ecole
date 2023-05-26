@@ -109,8 +109,8 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                             height: 40,
                             child: ElevatedButton(
                               onPressed: () {
-                                FocusManager.instance.primaryFocus?.unfocus();
                                 if (_formKey.currentState!.validate()) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                   _formKey.currentState!.save();
                                   db.insertParcours(
                                       Parcours(id: 0, libelle: libelle));
