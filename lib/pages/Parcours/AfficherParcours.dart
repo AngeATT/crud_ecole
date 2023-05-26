@@ -13,11 +13,12 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
   TextEditingController _searchController = TextEditingController();
   DataBaseCrud db = DataBaseCrud.databaseInstance();
   List<Parcours> parcours = [];
+  String s = '';
 
   late Ticker ticker;
 
-  Future<List<Parcours>> getParcours() async {
-    Future<List<Parcours>> parcoursRecup = db.getParcoursWithPattern('');
+  Future<List<Parcours>> getParcours(String s) async {
+    Future<List<Parcours>> parcoursRecup = db.getParcoursWithPattern(s);
     parcours = await parcoursRecup;
     return parcoursRecup;
   }
@@ -29,17 +30,15 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
     // TODO: implement initState
     ticker = createTicker((elapsed) {
       setState(() {
-        getParcours();
+        getParcours(s);
       });
     });
     ticker.start();
-    getParcours();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    getParcours();
     return GestureDetector(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(15),
@@ -64,11 +63,17 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
                         suffixIcon: IconButton(
                           icon: Icon(Icons.clear),
                           onPressed: () {
+                            getParcours('');
                             _searchController.clear();
                           },
                         ),
                       ),
                       onChanged: (value) {
+
+                        setState(() {
+                          s = value;
+                          getParcours(value);
+                        });
                         // Effectuez une action lorsque le texte de recherche change
                         // par exemple, filtrez une liste ou effectuez une recherche dans une base de données
                         print(value);
@@ -84,7 +89,7 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
                 shrinkWrap: true,
                 children: [
                   FutureBuilder<Object>(
-                    future: getParcours(),
+                    future: getParcours(s),
                     builder: (context, asyncsnapshot) {
                       // While waiting for the data to load, display a loading indicator
                       return ListView.builder(
