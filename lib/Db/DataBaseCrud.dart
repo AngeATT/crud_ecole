@@ -117,7 +117,7 @@ class DataBaseCrud {
       initializedDB();
     }
     final List<Map<String, dynamic>>? maps =  await db?.rawQuery(
-        "Select * from"+ PARCOURS_TABLE_NAME + "where " +CLASSE_COLUMN_LIBELLE+" LIKE %"+s+"%;"
+        "Select * from "+ PARCOURS_TABLE_NAME + " where " +CLASSE_COLUMN_LIBELLE+" LIKE '%"+s+"%';"
     );
     if (maps != null) {
       return List.generate(maps.length, (i) {

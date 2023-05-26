@@ -17,7 +17,7 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
   late Ticker ticker;
 
   Future<List<Parcours>> getParcours() async {
-    Future<List<Parcours>> parcoursRecup = db.getParcours();
+    Future<List<Parcours>> parcoursRecup = db.getParcoursWithPattern('');
     parcours = await parcoursRecup;
     return parcoursRecup;
   }
