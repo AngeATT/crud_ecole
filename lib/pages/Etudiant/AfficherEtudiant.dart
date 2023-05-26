@@ -1,6 +1,6 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/models/Eleve.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 
 class AfficherEtudiant extends StatefulWidget {
   @override
@@ -11,7 +11,13 @@ class _AfficherEtudiantState extends State<AfficherEtudiant> {
   TextEditingController _searchController = TextEditingController();
   DataBaseCrud db = DataBaseCrud.databaseInstance();
   String affiche = 'test afficher Etudiant';
-  List<String> eleves = [];
+  List<Eleve> eleves = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   int count = 1;
@@ -57,9 +63,9 @@ class _AfficherEtudiantState extends State<AfficherEtudiant> {
             ),
             const SizedBox(height: 16.0),
             ListView.builder(
-                itemCount: count,
+                itemCount: eleves.length,
                 shrinkWrap: true,
-                itemBuilder: (BuildContext context, int position) {
+                itemBuilder: (BuildContext context, int index) {
                   return Card(
                     color: Colors.white,
                     elevation: 2.0,
@@ -69,14 +75,43 @@ class _AfficherEtudiantState extends State<AfficherEtudiant> {
                         child: Icon(Icons.upgrade),
                       ),
                       title: Text(
-                        'Matricule :',
+                        'Matricule : ${(eleves[index] != null) ? eleves[index].matricule : ''}',
                         style: TextStyle(color: Colors.black),
                       ),
                       subtitle: Text(
-                        'Nom :',
+                        'Nom : ${(eleves[index] != null) ? eleves[index].nom : ''}',
                         style: TextStyle(color: Colors.black),
                       ),
-                      trailing: Icon(Icons.delete_forever, color: Colors.grey),
+                      trailing: Container(
+                        height: 50,
+                        width: 112,
+                        child: ButtonBar(
+                          children: [
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: (){
+                                    setState(() {
+                                    });
+                                    //TODO : renvoyer sur la page de modification d'un parcour
+                                  },
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    // Action à effectuer lors du clic sur le bouton
+                                    //TODO : appeler supprimer, demander la confirmation, supprimer, envoyer un toast
+                                  },
+                                  icon: Icon(
+                                      Icons.delete
+                                  ),
+                                  color: Colors.red,
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 })

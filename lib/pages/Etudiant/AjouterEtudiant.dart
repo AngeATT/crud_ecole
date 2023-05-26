@@ -1,7 +1,9 @@
+import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import '../../Db/DataBaseCrud.dart';
 
 import '../../textinputformatters/DecimalTextInputFormatter.dart';
 import '../../textinputformatters/NameTextInputFormatter.dart';
@@ -18,15 +20,14 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
   final DataBaseCrud db = DataBaseCrud.databaseInstance();
-
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   late Map<int, String> classes = {};
 
   late List<String> mats = [];
 
-  Eleve getEleve() {
-    return Eleve(
+  Etudiant getEleve() {
+    return Etudiant(
         matricule: matricule,
         nom: nom,
         prenom: prenom,
@@ -372,20 +373,18 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                               FocusManager.instance.primaryFocus?.unfocus();
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
-
-                                db.insertEtudiant(Etudiant(
-                                    matricule: matricule,
-                                    nom: nom,
-                                    prenom: prenom,
-                                    dateAnniv: DateFormat('yyyy-MM-dd')
-                                        .format(birthdate),
-                                    moyMath: moyMath,
-                                    moyInfo: moyInfo,
-                                    classeId: classe));
                                 fetchmats();
 
                                 try {
-                                  db.insertEleve(getEleve());
+                                      db.insertEtudiant(Etudiant(
+                                          matricule: matricule,
+                                          nom: nom,
+                                          prenom: prenom,
+                                          dateAnniv: DateFormat('yyyy-MM-dd')
+                                              .format(birthdate),
+                                          moyMath: moyMath,
+                                          moyInfo: moyInfo,
+                                          classeId: classe));
                                   makeToast("Eleve enregistré");
                                 } catch (e, printStack) {
                                   print(printStack);

@@ -1,4 +1,6 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/models/Eleve.dart';
+import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
 
 class AfficherParcours extends StatefulWidget {
@@ -7,14 +9,26 @@ class AfficherParcours extends StatefulWidget {
 }
 
 class _AfficherParcoursState extends State<AfficherParcours> {
+
   TextEditingController _searchController = TextEditingController();
   DataBaseCrud db = DataBaseCrud.databaseInstance();
-  String affiche = 'test afficher Etudiant';
-  List<String> eleves = [];
+  List<Parcours> parcours = [];
+  void getParcours() async{
+    Future<List<Parcours>> parcoursRecup = db.getParcours();
+    parcours = await parcoursRecup;
+  }
   int count = 1;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    getParcours();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    getParcours();
      return GestureDetector(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(15),
@@ -55,9 +69,9 @@ class _AfficherParcoursState extends State<AfficherParcours> {
               ),
               const SizedBox(height: 16.0),
               ListView.builder(
-                  itemCount: count,
+                  itemCount: parcours.length, //taille de notre tab
                   shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int position) {
+                  itemBuilder: (BuildContext context, int index) {
                     return Card(
                       color: Colors.white,
                       elevation: 2.0,
@@ -67,7 +81,7 @@ class _AfficherParcoursState extends State<AfficherParcours> {
                           child: Icon(Icons.upgrade),
                         ),
                         title: Text(
-                          'Libelle :',
+                          'Libelle : ${(parcours[index] != null) ? parcours[index].libelle : ''}',
                           style: TextStyle(color: Colors.black),
                         ),
                         trailing: Container(
@@ -81,8 +95,7 @@ class _AfficherParcoursState extends State<AfficherParcours> {
                                         icon: Icon(Icons.edit),
                                         onPressed: (){
                                           //TODO : renvoyer sur la page de modification d'un parcour
-                                        },
-                                        color: Colors.limeAccent,
+                                        }
                                       ),
                                       IconButton(
                                         onPressed: () {
