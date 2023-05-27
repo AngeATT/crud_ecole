@@ -10,58 +10,87 @@ class EtudiantCard extends Card {
       required DataBaseCrud db,
       required BuildContext context})
       : super(
-            color: Theme.of(context).colorScheme.onSecondary,
-            elevation: 2.0,
-            child: ListTile(
-              title: Text(etudiant.matricule),
-              subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(size: 20, Icons.person),
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        Text("${etudiant.nom} ${etudiant.prenom}"),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(size: 20, Icons.cake),
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        Text(etudiant.dateAnniv),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(size: 20, Icons.school),
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        Text(etudiant.classe),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(size: 20, Icons.numbers),
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        Text(etudiant.moyMath.toString()),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(size: 20, Icons.computer),
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        Text(etudiant.moyInfo.toString()),
-                      ],
-                    ),
-                  ]),
-            ));
+          color: Theme.of(context).colorScheme.onPrimary,
+          shadowColor: Theme.of(context).primaryColorLight,
+          elevation: 3.0,
+          child: ListTile(
+            title: Text(etudiant.matricule),
+            subtitle:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(
+                children: [
+                  Icon(
+                      size: 20,
+                      Icons.person,
+                      color: Theme.of(context).primaryColor),
+                  const SizedBox(
+                    width: 7,
+                  ),
+                  Text("${etudiant.nom} ${etudiant.prenom}"),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                      size: 20,
+                      Icons.cake,
+                      color: Theme.of(context).primaryColor),
+                  const SizedBox(
+                    width: 7,
+                  ),
+                  Text(etudiant.dateAnniv),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                      size: 20,
+                      Icons.school,
+                      color: Theme.of(context).primaryColor),
+                  const SizedBox(
+                    width: 7,
+                  ),
+                  Text(etudiant.classe),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                      size: 20,
+                      Icons.my_library_books_sharp,
+                      color: Theme.of(context).primaryColor),
+                  const SizedBox(
+                    width: 7,
+                  ),
+                  Text(etudiant.moyMath.toString()),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(
+                      size: 20,
+                      Icons.computer,
+                      color: Theme.of(context).primaryColor),
+                  const SizedBox(
+                    width: 7,
+                  ),
+                  Text(etudiant.moyInfo.toString()),
+                ],
+              ),
+            ]),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.delete, color: Colors.redAccent.shade700),
+                ),
+              ],
+            ),
+          ),
+        );
 }
