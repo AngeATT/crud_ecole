@@ -78,8 +78,8 @@ class EtudiantCard extends Card {
                 ],
               ),
             ]),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
+            trailing: Column(
+              mainAxisSize: MainAxisSize.max,
               children: [
                 IconButton(
                   onPressed: () {},

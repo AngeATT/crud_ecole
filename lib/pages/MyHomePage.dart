@@ -1,11 +1,7 @@
-import 'package:crud_ecole/pages/Etudiant/AfficherEtudiant.dart';
-import 'package:crud_ecole/pages/Etudiant/AjouterEtudiant.dart';
-import 'package:crud_ecole/pages/Etudiant/ModifierEtudiant.dart';
-import 'package:crud_ecole/pages/Etudiant/SupprimerEtudiant.dart';
 import 'package:crud_ecole/pages/Parcours/AfficherParcours.dart';
+import 'package:crud_ecole/pages/Etudiant/AjouterEtudiant.dart';
+import 'package:crud_ecole/pages/Etudiant/AfficherEtudiant.dart';
 import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
-import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
-import 'package:crud_ecole/pages/Parcours/SupprimerParcours.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -19,91 +15,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   FocusScopeNode focusNode = FocusScopeNode();
   int _selectedTabIndex = 0;
-  int _selectedMenu = 0;
-  int _parcoursMenuIndex = 0;
-  int _etudiantMenuIndex = 0;
 
   final headertitles = <String>['Classes', 'Etudiants'];
   static List<Widget> allPages = <Widget>[
     AfficherParcours(),
-    const AjouterParcours(),
-    ModifierParcours(),
-    SupprimerParcours(),
     AfficherEtudiant(),
-    const AjouterEtudiant(),
-    ModifierEtudiant(),
-    SupprimerEtudiant(),
   ];
-
-  void selectMenu() {
-    setState(() {
-      switch (_selectedTabIndex) {
-        case 0:
-          switch (_parcoursMenuIndex) {
-            case 0:
-              _selectedMenu = 0;
-              break;
-            case 1:
-              _selectedMenu = 1;
-              break;
-            case 2:
-              _selectedMenu = 2;
-              break;
-            case 3:
-              _selectedMenu = 3;
-              break;
-          }
-          break;
-        case 1:
-          switch (_etudiantMenuIndex) {
-            case 0:
-              _selectedMenu = 4;
-              break;
-            case 1:
-              _selectedMenu = 5;
-              break;
-            case 2:
-              _selectedMenu = 6;
-              break;
-            case 3:
-              _selectedMenu = 7;
-              break;
-          }
-          break;
-      }
-    });
-    FocusManager.instance.primaryFocus?.unfocus();
-  }
 
   void _onTabSelected(int index) {
     setState(() {
       _selectedTabIndex = index;
     });
-    selectMenu();
-  }
-
-  void _onMenuSelected(int indexMenu) {
-    Navigator.pop(context);
-    switch (_selectedTabIndex) {
-      case 0:
-        _parcoursMenuIndex = indexMenu;
-        break;
-      case 1:
-        _etudiantMenuIndex = indexMenu;
-        break;
-      default:
-    }
-    selectMenu();
   }
 
   void add() {
     Widget widget;
     double size;
     if (_selectedTabIndex == 0) {
-      widget = AjouterParcours();
+      widget = const AjouterParcours();
       size = 200;
     } else {
-      widget = AjouterEtudiant();
+      widget = const AjouterEtudiant();
       size = MediaQuery.of(context).size.height - 450;
     }
     showModalBottomSheet(
@@ -141,51 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: add,
         child: const Icon(Icons.add),
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              child: Center(
-                child: Text(
-                  headertitles[_selectedTabIndex],
-                  style: const TextStyle(fontSize: 25),
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.list_alt_sharp),
-              title: const Text('Afficher', style: TextStyle(fontSize: 18)),
-              onTap: () {
-                _onMenuSelected(0);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.add),
-              title: const Text(
-                'Ajouter',
-                style: TextStyle(fontSize: 18),
-              ),
-              onTap: () {
-                _onMenuSelected(1);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Modifier', style: TextStyle(fontSize: 18)),
-              onTap: () {
-                _onMenuSelected(2);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Supprimer', style: TextStyle(fontSize: 18)),
-              onTap: () {
-                _onMenuSelected(3);
-              },
-            ),
-          ],
-        ),
-      ),
       body: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () {
@@ -194,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: FocusScope(
             node: focusNode,
             child: Center(
-              child: IndexedStack(index: _selectedMenu, children: allPages),
+              child: IndexedStack(index: _selectedTabIndex, children: allPages),
             ),
           )),
       bottomNavigationBar: BottomNavigationBar(
