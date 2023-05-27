@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 class AfficherParcours extends StatefulWidget {
+  const AfficherParcours({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _AfficherParcoursState createState() => _AfficherParcoursState();
 }
 

@@ -380,9 +380,6 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     fetchmats();
                                   });
                                   _formKey.currentState!.reset();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Etudiant ajouté')));
                                 }
                                 // Utilisez les valeurs récupérées ici (matricule, nom, prenom, classe, moyMath, moyInfo)
                                 // par exemple, vous pouvez les afficher dans la console :

@@ -43,6 +43,7 @@ dependencies:
   fullscreen: ^1.0.3
   intl: ^0.18.1
   path: ^1.8.2
+  modal_bottom_sheet: ^2.1.2
 
 dev_dependencies:
   flutter_test:

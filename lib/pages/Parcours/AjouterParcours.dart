@@ -118,9 +118,6 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                     fetchdatas();
                                   });
                                   _formKey.currentState!.reset();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text('Classe ajoutée')));
                                 }
                               },
                               child: const Text('Valider'),
