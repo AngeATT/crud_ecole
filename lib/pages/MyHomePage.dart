@@ -23,7 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _parcoursMenuIndex = 0;
   int _etudiantMenuIndex = 0;
 
-  final headertitles = <String>['Parcours', 'Etudiants'];
+  final headertitles = <String>['Classes', 'Etudiants'];
   static List<Widget> allPages = <Widget>[
     AfficherParcours(),
     const AjouterParcours(),
