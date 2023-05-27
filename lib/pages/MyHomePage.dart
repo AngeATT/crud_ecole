@@ -2,6 +2,8 @@ import 'package:crud_ecole/pages/Parcours/AfficherParcours.dart';
 import 'package:crud_ecole/pages/Etudiant/AjouterEtudiant.dart';
 import 'package:crud_ecole/pages/Etudiant/AfficherEtudiant.dart';
 import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
+import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
+import 'package:crud_ecole/pages/Parcours/SupprimerParcours.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -19,10 +21,11 @@ class _MyHomePageState extends State<MyHomePage> {
   final headertitles = <String>['Classes', 'Etudiants'];
   static List<Widget> allPages = <Widget>[
     AfficherParcours(),
+  AfficherEtudiant(),
     AjouterParcours(),
     ModifierParcours(),
     SupprimerParcours(),
-    AfficherEtudiant(),
+
   ];
 
   void _onTabSelected(int index) {
@@ -39,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
       size = 200;
     } else {
       widget = const AjouterEtudiant();
-      size = MediaQuery.of(context).size.height - 450;
+      size = MediaQuery.of(context).size.height-150;
     }
     showModalBottomSheet(
         isScrollControlled: true,

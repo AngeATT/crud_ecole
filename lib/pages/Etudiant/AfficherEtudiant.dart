@@ -1,7 +1,7 @@
-import 'package:crud_ecole/models/EtudiantFormatted.dart';
-import 'package:flutter/material.dart';
+import 'package:crud_ecole/Db/DataBaseCrud.dart';
 
-import '../../Db/DataBaseCrud.dart';
+import '../../models/EtudiantFormatted.dart';
+import 'package:flutter/material.dart';
 import '../../customwidgets/EtudiantCard.dart';
 
 class AfficherEtudiant extends StatefulWidget {

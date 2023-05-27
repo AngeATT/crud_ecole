@@ -65,6 +65,11 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        const Text(
+                          'Ajouter une classe',
+                          style: TextStyle(fontSize: 24.0),
+                          textAlign: TextAlign.center,
+                        ),
                         const SizedBox(
                           height: 5.0,
                         ),

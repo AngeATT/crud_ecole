@@ -125,7 +125,7 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
                                                 }),
                                             IconButton(
                                               onPressed: () {
-                                                db.deleteParcour(parcours[index]);
+                                                db.deleteParcours(parcours[index]);
                                                 // Action à effectuer lors du clic sur le bouton
                                                 //TODO : appeler supprimer, demander la confirmation, supprimer, envoyer un toast
                                               },
