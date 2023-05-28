@@ -48,11 +48,12 @@ class _AjouterParcoursState extends State<AjouterParcours> {
       child: FocusScope(
         node: focusScopeNode,
         child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           children: <Widget>[
             Padding(
               padding: const EdgeInsetsDirectional.only(
                 start: 16.0,
-                top: 16.0,
+                top: 5.0,
                 end: 16.0,
                 bottom: 20.0,
               ),

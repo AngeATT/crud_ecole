@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Scaffold(body: MyHomePage()),
+      home: const MyHomePage(),
     );
   }
 }

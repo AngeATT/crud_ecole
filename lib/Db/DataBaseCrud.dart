@@ -1,7 +1,9 @@
 import 'package:crud_ecole/models/Etudiant.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../models/EtudiantFormatted.dart';
 import '../models/Parcours.dart';
 
 class DataBaseCrud {
@@ -21,7 +23,7 @@ class DataBaseCrud {
   static const String CLASSE_COLUMN_CODE = "id";
   static const String CLASSE_COLUMN_LIBELLE = "libelle";
 
-  final String queryetudiant = '''CREATE TABLE $ETUDIANT_TABLE_NAME " +
+  final String queryetudiant = '''CREATE TABLE $ETUDIANT_TABLE_NAME 
       ($ETUDIANT_COLUMN_MAT TEXT PRIMARY KEY, 
       $ETUDIANT_COLUMN_NOM TEXT NOT NULL, 
       $ETUDIANT_COLUMN_PRENOM TEXT NOT NULL, 
@@ -33,16 +35,16 @@ class DataBaseCrud {
       $PARCOURS_TABLE_NAME($CLASSE_COLUMN_CODE), 
       CONSTRAINT CHK_Notes CHECK ($ETUDIANT_COLUMN_MATH >= 0 AND 
       $ETUDIANT_COLUMN_MATH <= 20 AND $ETUDIANT_COLUMN_INFO >= 0 AND 
-      $ETUDIANT_COLUMN_INFO <= 20), " +
+      $ETUDIANT_COLUMN_INFO <= 20), 
       CONSTRAINT CHK_Nom CHECK (length($ETUDIANT_COLUMN_NOM) > 0), 
       CONSTRAINT CHK_Prenom CHECK (length($ETUDIANT_COLUMN_PRENOM) > 0), 
       CONSTRAINT CHK_Mat CHECK (length($ETUDIANT_COLUMN_MAT) > 0))
       ''';
 
   final String queryparcours = '''CREATE TABLE $PARCOURS_TABLE_NAME 
-      "($CLASSE_COLUMN_CODE INTEGER PRIMARY KEY AUTOINCREMENT, 
-      "$CLASSE_COLUMN_LIBELLE TEXT NOT NULL UNIQUE 
-      "CHECK (length($CLASSE_COLUMN_LIBELLE) > 0))
+      ($CLASSE_COLUMN_CODE INTEGER PRIMARY KEY AUTOINCREMENT, 
+      $CLASSE_COLUMN_LIBELLE TEXT NOT NULL UNIQUE 
+      CHECK (length($CLASSE_COLUMN_LIBELLE) > 0))
       ''';
 
   static DataBaseCrud databaseInstance() {
@@ -99,7 +101,7 @@ class DataBaseCrud {
     }
   }
 
-  Future<List<Etudiant>> getFormagttedEtudiants() async {
+  Future<List<EtudiantFormatted>> getFormagttedEtudiants() async {
     if (db == null) {
       initializedDB();
     }
@@ -116,14 +118,15 @@ ON $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_CLASSE_ID = $PARCOURS_TABLE_NAME.$CLASS
 ''');
     if (maps != null) {
       return List.generate(maps.length, (i) {
-        return Etudiant(
-          matricule: maps[i]['$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_MAT'],
-          nom: maps[i]['$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_NOM'],
-          prenom: maps[i]['$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_PRENOM'],
-          dateAnniv: maps[i]['$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_ANNIV'],
-          moyMath: maps[i]['$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_MATH'],
-          moyInfo: maps[i]['$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_INFO'],
-          classeId: maps[i]['$PARCOURS_TABLE_NAME.$CLASSE_COLUMN_LIBELLE'],
+        return EtudiantFormatted(
+          matricule: maps[i][ETUDIANT_COLUMN_MAT],
+          nom: maps[i][ETUDIANT_COLUMN_NOM],
+          prenom: maps[i][ETUDIANT_COLUMN_PRENOM],
+          dateAnniv: DateFormat('dd-MM-yyyy')
+              .format(DateTime.parse(maps[i][ETUDIANT_COLUMN_ANNIV])),
+          moyMath: maps[i][ETUDIANT_COLUMN_MATH],
+          moyInfo: maps[i][ETUDIANT_COLUMN_INFO],
+          classe: maps[i][CLASSE_COLUMN_LIBELLE],
         );
       });
     } else {
@@ -176,21 +179,6 @@ ON $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_CLASSE_ID = $PARCOURS_TABLE_NAME.$CLASS
       });
     } else {
       return [];
-    }
-  }
-
-  Future<String> getLibelleFromId(int id) async {
-    if (db == null) {
-      initializedDB();
-    }
-    final List<Map<String, dynamic>>? maps = await db?.query(
-        PARCOURS_TABLE_NAME,
-        where: '$CLASSE_COLUMN_CODE = ?',
-        whereArgs: [id]);
-    if (maps != null) {
-      return maps[0][id].toString();
-    } else {
-      return '';
     }
   }
 
