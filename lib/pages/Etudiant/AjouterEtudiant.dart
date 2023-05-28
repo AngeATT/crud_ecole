@@ -1,6 +1,7 @@
 import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import '../../Db/DataBaseCrud.dart';
 import '../../textinputformatters/DecimalTextInputFormatter.dart';
@@ -15,8 +16,11 @@ class AjouterEtudiant extends StatefulWidget {
 }
 
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
+  final fToast = FToast();
+
   FocusScopeNode focusScopeNode = FocusScopeNode();
-  FocusNode _dropdownFocusNode = FocusNode();
+  final FocusNode _dropdownFocusNode = FocusNode();
+
   TextEditingController moyMathController = TextEditingController();
 
   final DataBaseCrud db = DataBaseCrud.databaseInstance();
@@ -75,6 +79,32 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     }
   }
 
+  Widget buildToastChild() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Theme.of(context).primaryColorLight,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check,
+              color: Theme.of(context).colorScheme.inverseSurface),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(
+            "Etudiant ajouté",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -85,6 +115,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
 
   @override
   Widget build(BuildContext context) {
+    fToast.init(context);
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -95,7 +126,6 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
         child: FocusScope(
           node: focusScopeNode,
           child: ListView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsetsDirectional.only(
@@ -219,46 +249,42 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             ),
                           ),
                           const SizedBox(height: 16.0),
-                          Container(
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.zero,
-                            height: 59,
-                            child: FutureBuilder<Object>(
-                                future: fetchClasses(),
-                                builder: (context, snapshot) {
-                                  return DropdownButtonFormField(
-                                    focusNode: _dropdownFocusNode,
-                                    enableFeedback: true,
-                                    iconEnabledColor:
-                                        Theme.of(context).primaryColor,
-                                    menuMaxHeight: 220,
-                                    autovalidateMode:
-                                        AutovalidateMode.onUserInteraction,
-                                    items: classes.entries
-                                        .map((MapEntry<int, String> entry) {
-                                      return DropdownMenuItem<int>(
-                                        value: entry.key,
-                                        child: Text(entry.value),
-                                      );
-                                    }).toList(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        classe = value!;
-                                      });
-                                    },
-                                    decoration: const InputDecoration(
-                                        contentPadding:
-                                            EdgeInsets.only(left: 10),
-                                        labelText: "Classe",
-                                        border: UnderlineInputBorder()),
-                                    validator: (value) {
-                                      return value == null
-                                          ? 'Veuillez choisir la classe'
-                                          : null;
-                                    },
-                                  );
-                                }),
-                          ),
+                          FutureBuilder<Object>(
+                              future: fetchClasses(),
+                              builder: (context, snapshot) {
+                                return DropdownButtonFormField(
+                                  focusNode: _dropdownFocusNode,
+                                  enableFeedback: true,
+                                  iconEnabledColor:
+                                      Theme.of(context).primaryColor,
+                                  menuMaxHeight: 220,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  items: classes.entries
+                                      .map((MapEntry<int, String> entry) {
+                                    return DropdownMenuItem<int>(
+                                      value: entry.key,
+                                      child: Text(entry.value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      classe = value!;
+                                    });
+                                  },
+                                  decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.only(left: 10),
+                                      labelText: "Classe",
+                                      border: UnderlineInputBorder()),
+                                  icon: const Icon(
+                                      Icons.keyboard_arrow_down_sharp),
+                                  validator: (value) {
+                                    return value == null
+                                        ? 'Veuillez choisir la classe'
+                                        : null;
+                                  },
+                                );
+                              }),
                           const SizedBox(height: 16.0),
                           TextFormField(
                             autovalidateMode:
@@ -381,6 +407,12 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                       fetchMats();
                                     });
                                     _formKey.currentState!.reset();
+
+                                    fToast.showToast(
+                                      gravity: ToastGravity.TOP,
+                                      child: buildToastChild(),
+                                      toastDuration: const Duration(seconds: 2),
+                                    );
                                   }
                                 },
                                 child: const Text('Valider'),

@@ -1,6 +1,7 @@
 import 'package:crud_ecole/pages/MyHomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +44,9 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'CRUD ECOLE',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
       ),
       home: const MyHomePage(),
     );

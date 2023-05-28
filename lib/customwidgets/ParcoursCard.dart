@@ -1,12 +1,11 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
 import 'package:flutter/material.dart';
+import '../models/Parcours.dart';
 
-import '../models/EtudiantFormatted.dart';
-
-class EtudiantCard extends Card {
-  EtudiantCard(
+class ParcoursCard extends Card {
+  ParcoursCard(
       {super.key,
-      required EtudiantFormatted etudiant,
+      required Parcours parcours,
       required DataBaseCrud db,
       required BuildContext context})
       : super(

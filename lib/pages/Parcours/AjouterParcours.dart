@@ -2,6 +2,7 @@ import 'package:crud_ecole/Db/DataBaseCrud.dart';
 import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../textinputformatters/NameTextInputFormatter.dart';
 
@@ -14,6 +15,8 @@ class AjouterParcours extends StatefulWidget {
 }
 
 class _AjouterParcoursState extends State<AjouterParcours> {
+  final fToast = FToast();
+
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
   final DataBaseCrud db = DataBaseCrud.databaseInstance();
@@ -32,6 +35,32 @@ class _AjouterParcoursState extends State<AjouterParcours> {
     return classes;
   }
 
+  Widget buildToastChild() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Theme.of(context).primaryColorLight,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check,
+              color: Theme.of(context).colorScheme.inverseSurface),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(
+            "Classe ajoutée",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +70,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
 
   @override
   Widget build(BuildContext context) {
+    fToast.init(context);
     return GestureDetector(
       onTap: () {
         focusScopeNode.unfocus();
@@ -116,6 +146,11 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                     fetchdatas();
                                   });
                                   _formKey.currentState!.reset();
+                                  fToast.showToast(
+                                    gravity: ToastGravity.TOP,
+                                    child: buildToastChild(),
+                                    toastDuration: const Duration(seconds: 2),
+                                  );
                                 }
                               },
                               child: const Text('Valider'),
