@@ -15,7 +15,22 @@ class AfficherEtudiant extends StatefulWidget {
 class _AfficherEtudiantState extends State<AfficherEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
-  final DataBaseCrud mydb = DataBaseCrud.databaseInstance();
+  final DataBaseCrud db = DataBaseCrud.databaseInstance();
+
+  List<EtudiantFormatted> etudiants = [];
+
+  Future<List<EtudiantFormatted>> fetchEtudiants() async {
+    etudiants = await db.getFormagttedEtudiants();
+    setState(() {});
+    return etudiants;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assign data within the initState() method
+    fetchEtudiants();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,31 +43,53 @@ class _AfficherEtudiantState extends State<AfficherEtudiant> {
           node: focusScopeNode,
           child: Container(
             alignment: Alignment.center,
-            child: ListView.builder(
-                itemCount: 56,
-                itemBuilder: (BuildContext context, int position) {
-                  return Padding(
-                    padding: const EdgeInsetsDirectional.only(
-                        start: 16.0, top: 16.0, end: 16.0),
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 450),
-                        child: EtudiantCard(
-                          etudiant: EtudiantFormatted(
-                              matricule: "matricule",
-                              nom: "nom",
-                              prenom: "prenom",
-                              dateAnniv: "09-11-2000",
-                              moyMath: 12,
-                              moyInfo: 20,
-                              classe: "classe"),
-                          db: mydb,
-                          context: context,
-                        ),
+            child: FutureBuilder<Object>(
+                future: fetchEtudiants(),
+                builder: (context, snapshot) {
+                  if (etudiants.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'Ajoutez des étudiants pour les voir ici',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w300),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    return ListView.builder(
+                        itemCount: etudiants.length,
+                        itemBuilder: (BuildContext context, int position) {
+                          EdgeInsetsGeometry bottompadding;
+                          if (position == etudiants.length - 1) {
+                            bottompadding = const EdgeInsets.only(bottom: 100);
+                          } else {
+                            bottompadding = EdgeInsets.zero;
+                          }
+                          return Padding(
+                            padding: const EdgeInsetsDirectional.only(
+                                start: 16.0, top: 16.0, end: 16.0),
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Container(
+                                padding: bottompadding,
+                                constraints:
+                                    const BoxConstraints(maxWidth: 450),
+                                child: EtudiantCard(
+                                  etudiant: EtudiantFormatted(
+                                      matricule: etudiants[position].matricule,
+                                      nom: etudiants[position].nom,
+                                      prenom: etudiants[position].prenom,
+                                      dateAnniv: "09-11-2000",
+                                      moyMath: etudiants[position].moyMath,
+                                      moyInfo: etudiants[position].moyInfo,
+                                      classe: etudiants[position].classe),
+                                  db: db,
+                                  context: context,
+                                ),
+                              ),
+                            ),
+                          );
+                        });
+                  }
                 }),
           ),
         ),
