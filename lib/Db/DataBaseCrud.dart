@@ -229,4 +229,17 @@ ON $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_CLASSE_ID = $PARCOURS_TABLE_NAME.$CLASS
     await db!.delete(PARCOURS_TABLE_NAME,
         where: '$CLASSE_COLUMN_CODE = ?', whereArgs: [parcours.id]);
   }
+  
+  Future<int> getEffectifs(Parcours parcours) async {
+    if (db == null){
+      initializedDB();
+    }
+    int effectif = 0;
+    var maps = await db!.rawQuery("Select * from "+ETUDIANT_TABLE_NAME+" where "+ETUDIANT_COLUMN_CLASSE_ID+" LIKE "+parcours.id.toString());
+    if (maps != null){
+      return maps.length;
+    }else{
+      return 0;
+    }
+  }
 }

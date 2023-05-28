@@ -1,8 +1,8 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/customwidgets/EtudiantCard.dart';
+import 'package:crud_ecole/models/EtudiantFormatted.dart';
 
-import '../../models/EtudiantFormatted.dart';
 import 'package:flutter/material.dart';
-import '../../customwidgets/EtudiantCard.dart';
 
 class AfficherEtudiant extends StatefulWidget {
   const AfficherEtudiant({super.key});

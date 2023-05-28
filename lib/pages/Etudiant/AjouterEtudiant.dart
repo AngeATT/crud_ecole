@@ -69,18 +69,6 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     }
   }
 
-  void clearChamps() {
-    setState(() {
-      matriculeController.clear();
-      nomController.clear();
-      prenomController.clear();
-      dateController.value =
-          TextEditingValue(text: "Choisir la date d'anniversaire");
-      classeController.clear();
-      moyMathController.clear();
-      moyInfoController.clear();
-    });
-  }
 
   @override
   void initState() {
@@ -231,10 +219,9 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             padding: EdgeInsets.zero,
                             height: 59,
                             child: FutureBuilder<Object>(
-                                future: fetchClasses(),
+                                future: fetchclasses(),
                                 builder: (context, snapshot) {
                                   return DropdownButtonFormField(
-                                    focusNode: _dropdownFocusNode,
                                     enableFeedback: true,
                                     iconEnabledColor:
                                         Theme.of(context).primaryColor,
@@ -385,7 +372,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                         moyInfo: moyInfo,
                                         classeId: classe));
                                     setState(() {
-                                      fetchMats();
+                                      fetchmats();
                                     });
                                     _formKey.currentState!.reset();
                                   }

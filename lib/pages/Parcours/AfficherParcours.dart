@@ -15,28 +15,30 @@ class AfficherParcours extends StatefulWidget {
 class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerProviderStateMixin {
   TextEditingController _searchController = TextEditingController();
   DataBaseCrud db = DataBaseCrud.databaseInstance();
-  List<Parcours> parcours = [];
+  late List<Parcours> parcours;
+  Map<Parcours,int> effectifs = new Map();
   String s = '';
 
   late Ticker ticker;
 
   Future<List<Parcours>> getParcours(String s) async {
-    Future<List<Parcours>> parcoursRecup = db.getParcoursWithPattern(s);
-    parcours = await parcoursRecup;
-    return parcoursRecup;
+    parcours =  await db.getParcoursWithPattern(s);
+    for (Parcours parcour in parcours){
+      int effectif = await getEffectifs(parcour);
+      effectifs.putIfAbsent(parcour, ()  => effectif);
+    }
+    setState(() {});
+    return parcours;
   }
-
+  Future<int> getEffectifs(Parcours parcour) async {
+     return await db.getEffectifs(parcour);
+  }
   int count = 1;
 
   @override
   void initState() {
     // TODO: implement initState
-    ticker = createTicker((elapsed) {
-      setState(() {
-        getParcours(s);
-      });
-    });
-    ticker.start();
+    getParcours(s);
     super.initState();
   }
 
@@ -72,7 +74,6 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
                         ),
                       ),
                       onChanged: (value) {
-
                         setState(() {
                           s = value;
                           getParcours(value);
@@ -105,11 +106,14 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
                               child: ListTile(
                                   leading: CircleAvatar(
                                     backgroundColor: Colors.blueGrey,
-                                    child: Icon(Icons.upgrade),
+                                    child: Icon(Icons.school),
                                   ),
                                   title: Text(
-                                    'Libelle : ${parcours[index].libelle}',
+                                    'Classe : ${parcours[index].libelle}',
                                     style: TextStyle(color: Colors.black),
+                                  ),
+                                  subtitle: Text(
+                                    'Effectif enregistré : ${effectifs[parcours[index]]}'
                                   ),
                                   trailing: Container(
                                     height: 50,
