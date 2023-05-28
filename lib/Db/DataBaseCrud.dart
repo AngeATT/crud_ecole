@@ -8,7 +8,7 @@ import '../models/Parcours.dart';
 
 class DataBaseCrud {
   Database? db;
-  static DataBaseCrud _uniqueDB = DataBaseCrud();
+  static final DataBaseCrud _uniqueDB = DataBaseCrud();
 
   static const String ETUDIANT_TABLE_NAME = "etudiant";
   static const String ETUDIANT_COLUMN_MAT = "matricule";
