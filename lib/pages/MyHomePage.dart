@@ -2,8 +2,6 @@ import 'package:crud_ecole/pages/Parcours/AfficherParcours.dart';
 import 'package:crud_ecole/pages/Etudiant/AjouterEtudiant.dart';
 import 'package:crud_ecole/pages/Etudiant/AfficherEtudiant.dart';
 import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
-import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
-import 'package:crud_ecole/pages/Parcours/SupprimerParcours.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {

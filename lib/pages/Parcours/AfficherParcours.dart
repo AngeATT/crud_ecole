@@ -1,7 +1,6 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
 import 'package:crud_ecole/models/Parcours.dart';
 import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
-import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:crud_ecole/customwidgets/CustomFloatingActionButton.dart';
