@@ -1,8 +1,10 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
-import 'package:crud_ecole/models/Eleve.dart';
 import 'package:crud_ecole/models/Parcours.dart';
+import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
+import 'package:crud_ecole/pages/Parcours/ModifierParcours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:crud_ecole/customwidgets/CustomFloatingActionButton.dart';
 
 class AfficherParcours extends StatefulWidget {
   const AfficherParcours({super.key});
@@ -76,7 +78,6 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
                       onChanged: (value) {
                         setState(() {
                           s = value;
-                          getParcours(value);
                         });
                         // Effectuez une action lorsque le texte de recherche change
                         // par exemple, filtrez une liste ou effectuez une recherche dans une base de données
@@ -125,6 +126,7 @@ class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerPr
                                             IconButton(
                                                 icon: Icon(Icons.edit),
                                                 onPressed: () {
+                                                  CustomFloatingActionButton.add(context, AjouterParcours(modeModifier: true, idParcour: parcours[index].id));
                                                   //TODO : renvoyer sur la page de modification d'un parcour
                                                 }),
                                             IconButton(

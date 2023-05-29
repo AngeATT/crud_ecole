@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     Widget widget = _selectedTabIndex == 0
-        ? const AjouterParcours()
+        ? AjouterParcours(modeModifier: false, idParcour: 0)
         : const AjouterEtudiant();
 
     if (height > width) {

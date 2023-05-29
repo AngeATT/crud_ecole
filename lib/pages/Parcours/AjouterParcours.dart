@@ -6,19 +6,28 @@ import 'package:flutter/services.dart';
 import '../../textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterParcours extends StatefulWidget {
-  const AjouterParcours({super.key});
+  final bool modeModifier;
+  final int idParcour;
+   AjouterParcours(
+      {super.key,required this.modeModifier, required this.idParcour});
 
   @override
   // ignore: library_private_types_in_public_api
-  _AjouterParcoursState createState() => _AjouterParcoursState();
+  _AjouterParcoursState createState() => _AjouterParcoursState(modeModifier,idParcour);
 }
 
 class _AjouterParcoursState extends State<AjouterParcours> {
+  final bool modeModifier;
+  final int idParcour;
+  late String parcourLibelle;
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
   final DataBaseCrud db = DataBaseCrud.databaseInstance();
 
-  late List<String> classes;
+  List<String> classes = [];
+
+  static String MODIFIER_CLASSE = 'Modifier Parcours Etudiant';
+  static String AJOUTER_CLASSE  = 'Ajouter une classe';
 
   final _formKey = GlobalKey<FormState>();
 
@@ -26,9 +35,19 @@ class _AjouterParcoursState extends State<AjouterParcours> {
 
   TextEditingController libelleController = TextEditingController();
 
+  _AjouterParcoursState(this.modeModifier,this.idParcour);
+
   Future<List<String>> fetchdatas() async {
-    final datas = await db.getParcoursLibelle();
-    classes = datas;
+    final datas = await db.getParcours();
+    classes = await db.getParcoursLibelle();
+    if (modeModifier){
+      for (Parcours parcours in datas){
+        if (idParcour == parcours.id){
+          parcourLibelle = parcours.libelle;
+          libelleController.value = TextEditingValue(text: parcours.libelle);
+        }
+      }
+    }
     return classes;
   }
 
@@ -37,6 +56,10 @@ class _AjouterParcoursState extends State<AjouterParcours> {
     super.initState();
     // Assign data within the initState() method
     fetchdatas();
+  }
+
+  String titre(){
+    return modeModifier ? MODIFIER_CLASSE : AJOUTER_CLASSE;
   }
 
   @override
@@ -66,8 +89,8 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          'Ajouter une classe',
+                         Text(
+                          titre(),
                           style: TextStyle(fontSize: 24.0),
                           textAlign: TextAlign.center,
                         ),
@@ -79,8 +102,8 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                             builder: (context, snapshot) {
                               return TextFormField(
                                 controller: libelleController,
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
+                                autovalidateMode: modeModifier ?
+                                     AutovalidateMode.disabled : AutovalidateMode.onUserInteraction,
                                 textCapitalization:
                                     TextCapitalization.sentences,
                                 inputFormatters: [
@@ -97,7 +120,10 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                   if (value!.isEmpty) {
                                     return 'Veuillez entrer le Libellé';
                                   } else if (classes.contains(value.trim())) {
-                                    return 'Le libellé doit être unique';
+                                    if (modeModifier){
+                                      return value == parcourLibelle ? "Le libéllé n'a pas changé" : "Libellé déjà utilisé";
+                                    }
+                                    return "Libellé déjà utilisé";
                                   } else {
                                     return null;
                                   }
@@ -114,12 +140,16 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                             width: 200,
                             height: 40,
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   FocusManager.instance.primaryFocus?.unfocus();
                                   _formKey.currentState!.save();
-                                  db.insertParcours(
-                                      Parcours(id: 0, libelle: libelle));
+                                  if (modeModifier){
+                                    await db.updateParcours(Parcours(id: this.idParcour, libelle: this.libelle));
+                                  }else{
+                                    await db.insertParcours(
+                                        Parcours(id: 0, libelle: libelle));
+                                  }
                                   setState(() {
                                     fetchdatas();
                                   });
