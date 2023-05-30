@@ -1,6 +1,5 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
 import 'package:flutter/material.dart';
-
 import '../models/EtudiantFormatted.dart';
 
 class EtudiantCard extends Card {
@@ -12,7 +11,7 @@ class EtudiantCard extends Card {
       : super(
           color: Theme.of(context).colorScheme.onPrimary,
           shadowColor: Theme.of(context).primaryColorLight,
-          elevation: 3.0,
+          elevation: 5.0,
           child: ListTile(
             title: Text(
               etudiant.matricule,
@@ -34,7 +33,13 @@ class EtudiantCard extends Card {
                             const SizedBox(
                               width: 7,
                             ),
-                            Text("${etudiant.nom} ${etudiant.prenom}"),
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 295),
+                              child: Text(
+                                "${etudiant.nom} ${etudiant.prenom}",
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                         Row(
@@ -58,7 +63,10 @@ class EtudiantCard extends Card {
                             const SizedBox(
                               width: 7,
                             ),
-                            Text(etudiant.classe),
+                            Container(
+                                constraints:
+                                    const BoxConstraints(maxWidth: 295),
+                                child: Text(etudiant.classe)),
                           ],
                         ),
                         Row(
@@ -122,4 +130,5 @@ class EtudiantCard extends Card {
             ),
           ),
         );
+  void update() {}
 }

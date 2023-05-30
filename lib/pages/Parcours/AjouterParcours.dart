@@ -1,13 +1,13 @@
-import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/globals.dart' as globals;
 import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-import '../../textinputformatters/NameTextInputFormatter.dart';
+import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterParcours extends StatefulWidget {
-  const AjouterParcours({super.key});
+  final Function state;
+  const AjouterParcours({super.key, required this.state});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -19,9 +19,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
-  final DataBaseCrud db = DataBaseCrud.databaseInstance();
-
-  late List<String> classes;
+  List<String> classes = [];
 
   final _formKey = GlobalKey<FormState>();
 
@@ -30,8 +28,11 @@ class _AjouterParcoursState extends State<AjouterParcours> {
   TextEditingController libelleController = TextEditingController();
 
   Future<List<String>> fetchdatas() async {
-    final datas = await db.getParcoursLibelle();
-    classes = datas;
+    final datas = await globals.db.getParcoursLibelle();
+    classes.clear();
+    for (var classe in datas) {
+      classes.add(classe.toUpperCase());
+    }
     return classes;
   }
 
@@ -78,7 +79,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
       child: FocusScope(
         node: focusScopeNode,
         child: ListView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          physics: const BouncingScrollPhysics(),
           children: <Widget>[
             Padding(
               padding: const EdgeInsetsDirectional.only(
@@ -117,10 +118,15 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                 ),
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'Veuillez entrer le Libellé';
-                                  } else if (classes.contains(value.trim())) {
+                                    return 'Veuillez entrer le libellé';
+                                  } else if (classes
+                                      .contains(value.trim().toUpperCase())) {
                                     return 'Le libellé doit être unique';
-                                  } else {
+                                  } else if (value.trim().toUpperCase() ==
+                                      'TOUT') {
+                                    return "Une classe ne peut pas s'appeler tout";
+                                  }
+                                  {
                                     return null;
                                   }
                                 },
@@ -140,11 +146,10 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                 if (_formKey.currentState!.validate()) {
                                   FocusManager.instance.primaryFocus?.unfocus();
                                   _formKey.currentState!.save();
-                                  db.insertParcours(
+                                  globals.db.insertParcours(
                                       Parcours(id: 0, libelle: libelle));
-                                  setState(() {
-                                    fetchdatas();
-                                  });
+                                  widget.state;
+                                  fetchdatas();
                                   _formKey.currentState!.reset();
                                   fToast.showToast(
                                     gravity: ToastGravity.TOP,

@@ -1,11 +1,11 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/models/ParcoursFormatted.dart';
 import 'package:flutter/material.dart';
-import '../models/Parcours.dart';
 
 class ParcoursCard extends Card {
   ParcoursCard(
       {super.key,
-      required Parcours parcours,
+      required ParcoursFormatted parcours,
       required DataBaseCrud db,
       required BuildContext context})
       : super(
@@ -18,30 +18,46 @@ class ParcoursCard extends Card {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                InkWell(
-                  highlightColor: const Color.fromARGB(50, 158, 158, 158),
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () {},
-                  splashColor: Theme.of(context).primaryColorLight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child:
-                        Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                  ),
+                Expanded(
+                  child: Container(
+                      constraints: const BoxConstraints(maxWidth: 295),
+                      child: Text(
+                        "Effectif: ${parcours.effectif}",
+                        overflow: TextOverflow.ellipsis,
+                      )),
                 ),
-                const SizedBox(
-                  width: 15,
-                ),
-                InkWell(
-                  highlightColor: const Color.fromARGB(50, 158, 158, 158),
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () {},
-                  splashColor: const Color.fromARGB(80, 229, 56, 53),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Icon(Icons.delete, color: Colors.red.shade600),
-                  ),
+                Row(
+                  children: [
+                    const SizedBox(
+                      height: 3,
+                    ),
+                    InkWell(
+                      highlightColor: const Color.fromARGB(50, 158, 158, 158),
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () {},
+                      splashColor: Theme.of(context).primaryColorLight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Icon(Icons.edit,
+                            color: Theme.of(context).primaryColor),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    InkWell(
+                      highlightColor: const Color.fromARGB(50, 158, 158, 158),
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () {},
+                      splashColor: const Color.fromARGB(80, 229, 56, 53),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Icon(Icons.delete, color: Colors.red.shade600),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

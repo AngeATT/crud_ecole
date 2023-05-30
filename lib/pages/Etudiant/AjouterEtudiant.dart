@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import '../../Db/DataBaseCrud.dart';
-import '../../textinputformatters/DecimalTextInputFormatter.dart';
-import '../../textinputformatters/NameTextInputFormatter.dart';
+import 'package:crud_ecole/globals.dart' as globals;
+import 'package:crud_ecole/textinputformatters/DecimalTextInputFormatter.dart';
+import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterEtudiant extends StatefulWidget {
-  const AjouterEtudiant({Key? key}) : super(key: key);
-
+  final Function state;
+  const AjouterEtudiant({super.key, required this.state});
   @override
   // ignore: library_private_types_in_public_api
   _AjouterEtudiantState createState() => _AjouterEtudiantState();
@@ -22,8 +22,6 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   final FocusNode _dropdownFocusNode = FocusNode();
 
   TextEditingController moyMathController = TextEditingController();
-
-  final DataBaseCrud db = DataBaseCrud.databaseInstance();
 
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
@@ -44,12 +42,12 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   TextEditingController dateController = TextEditingController();
 
   void fetchMats() async {
-    final datas = await db.getEtudiantsMat();
+    final datas = await globals.db.getEtudiantsMat();
     mats = datas;
   }
 
   Future<Map<int, String>> fetchClasses() async {
-    final datas = await db.getParcours();
+    final datas = await globals.db.getParcours();
     classes = datas.fold<Map<int, String>>({}, (map, classe) {
       map[classe.id] = classe.libelle;
       return map;
@@ -70,11 +68,8 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
       // ignore: use_build_context_synchronously
       FocusScope.of(context).requestFocus(_dropdownFocusNode);
       if (picked != birthdate) {
-        setState(() {
-          birthdate = picked;
-          dateController.value =
-              TextEditingValue(text: formatter.format(picked));
-        });
+        birthdate = picked;
+        dateController.value = TextEditingValue(text: formatter.format(picked));
       }
     }
   }
@@ -126,13 +121,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
         child: FocusScope(
           node: focusScopeNode,
           child: ListView(
+            physics: const BouncingScrollPhysics(),
             children: <Widget>[
               Padding(
                 padding: const EdgeInsetsDirectional.only(
                   start: 16.0,
                   end: 16.0,
                   top: 5.0,
-                  bottom: 20.0,
                 ),
                 child: Container(
                   alignment: Alignment.center,
@@ -268,9 +263,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     );
                                   }).toList(),
                                   onChanged: (value) {
-                                    setState(() {
-                                      classe = value!;
-                                    });
+                                    classe = value!;
                                   },
                                   decoration: const InputDecoration(
                                       contentPadding: EdgeInsets.only(left: 10),
@@ -394,7 +387,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                     _formKey.currentState!.save();
-                                    db.insertEtudiant(Etudiant(
+                                    globals.db.insertEtudiant(Etudiant(
                                         matricule: matricule,
                                         nom: nom,
                                         prenom: prenom,
@@ -403,9 +396,8 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                         moyMath: moyMath,
                                         moyInfo: moyInfo,
                                         classeId: classe));
-                                    setState(() {
-                                      fetchMats();
-                                    });
+                                    widget.state;
+                                    fetchMats();
                                     _formKey.currentState!.reset();
 
                                     fToast.showToast(
