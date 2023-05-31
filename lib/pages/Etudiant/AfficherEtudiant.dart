@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:crud_ecole/globals.dart';
 import 'package:crud_ecole/models/EtudiantFormatted.dart';
 import 'package:crud_ecole/pages/Etudiant/AjouterEtudiant.dart';
 import 'package:flutter/material.dart';
@@ -327,6 +328,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                             ),
                                             state: state,
                                             context: context,
+                                            db: db,
                                           ),
                                         ),
                                       ),

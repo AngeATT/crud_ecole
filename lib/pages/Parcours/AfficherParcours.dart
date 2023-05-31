@@ -256,7 +256,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
                                                       .effectif,
                                             ),
                                             db: globals.db,
-                                            context: context,
+                                            fContext: context,
                                             state: state
                                           ),
                                         ),

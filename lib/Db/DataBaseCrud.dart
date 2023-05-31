@@ -311,6 +311,10 @@ GROUP BY $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_CODE
     await db!.delete(ETUDIANT_TABLE_NAME,
         where: '$ETUDIANT_COLUMN_MAT = ?', whereArgs: [etudiant.matricule]);
   }
+  Future<void> deleteEtudiantByMat(String matricule) async {
+    await db!.delete(ETUDIANT_TABLE_NAME,
+        where: '$ETUDIANT_COLUMN_MAT = ?', whereArgs: [matricule]);
+  }
 
   Future<void> deleteParcours(Parcours parcours) async {
     await db!.delete(PARCOURS_TABLE_NAME,

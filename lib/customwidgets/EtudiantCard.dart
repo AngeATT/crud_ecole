@@ -1,3 +1,5 @@
+import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/globals.dart';
 import 'package:crud_ecole/pages/Etudiant/ModifierEtudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +10,7 @@ class EtudiantCard extends Card {
       {super.key,
       required EtudiantFormatted etudiant,
       required BuildContext context,
+      required DataBaseCrud db,
       required final Function state})
       : super(
           color: Theme.of(context).colorScheme.onPrimary,
@@ -156,7 +159,38 @@ class EtudiantCard extends Card {
                     InkWell(
                       highlightColor: const Color.fromARGB(50, 158, 158, 158),
                       borderRadius: BorderRadius.circular(20),
-                      onTap: () {},
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("Suppression de l'étudiant"),
+                                content: Text(
+                                    "Valider la suppresion de l'étudiant ?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('Annuler'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Confirmer'),
+                                    onPressed: () async {
+                                      // Perform the confirmation action here
+                                      try {
+                                        db.deleteEtudiantByMat(
+                                            etudiant.matricule);
+
+                                        Navigator.of(context).pop();
+                                      } catch (e) {
+                                      }
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                      },
                       splashColor: const Color.fromARGB(80, 229, 56, 53),
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
@@ -169,5 +203,6 @@ class EtudiantCard extends Card {
             ),
           ),
         );
+
   void update() {}
 }

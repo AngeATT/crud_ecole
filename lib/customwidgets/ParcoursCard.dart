@@ -1,4 +1,5 @@
 import 'package:crud_ecole/Db/DataBaseCrud.dart';
+import 'package:crud_ecole/globals.dart';
 import 'package:crud_ecole/models/ParcoursFormatted.dart';
 import 'package:flutter/material.dart';
 import 'package:crud_ecole/customwidgets/CustomFloatingActionButton.dart';
@@ -11,11 +12,11 @@ class ParcoursCard extends Card {
       {super.key,
       required ParcoursFormatted parcours,
       required DataBaseCrud db,
-      required BuildContext context,
+      required BuildContext fContext,
       required Function state})
       : super(
-          color: Theme.of(context).colorScheme.onPrimary,
-          shadowColor: Theme.of(context).primaryColorLight,
+          color: Theme.of(fContext).colorScheme.onPrimary,
+          shadowColor: Theme.of(fContext).primaryColorLight,
           elevation: 3.0,
           child: ListTile(
             title: Text(
@@ -41,12 +42,12 @@ class ParcoursCard extends Card {
                     InkWell(
                       highlightColor: const Color.fromARGB(50, 158, 158, 158),
                       borderRadius: BorderRadius.circular(20),
-                      onTap: () { CustomFloatingActionButton.add(context,AjouterParcours(modeModifier: true, idParcour: parcours.id,state: state,)); },
-                      splashColor: Theme.of(context).primaryColorLight,
+                      onTap: () { CustomFloatingActionButton.add(fContext,AjouterParcours(modeModifier: true, idParcour: parcours.id,state: state,)); },
+                      splashColor: Theme.of(fContext).primaryColorLight,
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: Icon(Icons.edit,
-                            color: Theme.of(context).primaryColor),
+                            color: Theme.of(fContext).primaryColor),
                       ),
                     ),
                     const SizedBox(
@@ -57,7 +58,7 @@ class ParcoursCard extends Card {
                       borderRadius: BorderRadius.circular(20),
                       onTap: () {
                         showDialog(
-                          context: context,
+                          context: fContext,
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: Text('Suppression de la classe'),
@@ -75,25 +76,9 @@ class ParcoursCard extends Card {
                                     // Perform the confirmation action here
                                     try{
                                       await db.deleteParcoursById(parcours.id);
-                                      Fluttertoast.showToast(
-                                        msg: "Classe supprimé",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.black45,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0,
-                                      );
+                                      globals.showToast(fContext,"Parcour supprimé");
                                     }catch(e){
-                                      Fluttertoast.showToast(
-                                        msg: "Erreur lors de la suppression",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.CENTER,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Colors.black45,
-                                        textColor: Colors.white,
-                                        fontSize: 16.0,
-                                      );
+                                      globals.showToast(fContext,"Parcour supprimé");
                                     }
                                     Navigator.of(context).pop();
                                   },
@@ -115,4 +100,5 @@ class ParcoursCard extends Card {
             ),
           ),
         );
+
 }
