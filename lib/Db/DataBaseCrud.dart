@@ -1,10 +1,9 @@
 import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:crud_ecole/models/ParcoursFormatted.dart';
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-
+import 'package:sqflite/sqflite.dart'
+    show ConflictAlgorithm, Database, getDatabasesPath, openDatabase;
 import '../models/EtudiantFormatted.dart';
 import '../models/Parcours.dart';
 
