@@ -93,19 +93,22 @@ class _MyHomePageState extends State<MyHomePage> {
               child: IndexedStack(index: _selectedTabIndex, children: allPages),
             ),
           )),
-      bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.school),
-            label: headertitles[0],
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            label: headertitles[1],
-          )
-        ],
-        currentIndex: _selectedTabIndex,
-        onTap: _onTabSelected,
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(hoverColor: Colors.transparent),
+        child: BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.school),
+              label: headertitles[0],
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.person),
+              label: headertitles[1],
+            )
+          ],
+          currentIndex: _selectedTabIndex,
+          onTap: _onTabSelected,
+        ),
       ),
     );
   }

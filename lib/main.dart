@@ -1,9 +1,11 @@
 import 'package:crud_ecole/pages/MyHomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:crud_ecole/globals.dart' as globals;
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await globals.db.initializedDB();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) {
     runApp(const MyApp());
@@ -30,20 +32,24 @@ class _MyAppState extends State<MyApp> {
       systemStatusBarContrastEnforced: false,
     );
 
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,
         overlays: [SystemUiOverlay.bottom]);
 
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.edgeToEdge,
+    );
 
     return MaterialApp(
       title: 'CRUD ECOLE',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
       ),
       home: const MyHomePage(),
     );

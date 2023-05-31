@@ -1,9 +1,12 @@
-import 'package:crud_ecole/Db/DataBaseCrud.dart';
-import 'package:crud_ecole/models/Parcours.dart';
-import 'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
+import 'dart:async';
+import 'package:crud_ecole/globals.dart' as globals;
+import 'package:crud_ecole/customwidgets/ParcoursCard.dart';
+import 'package:crud_ecole/models/ParcoursFormatted.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:crud_ecole/customwidgets/CustomFloatingActionButton.dart';
+import 'package:flutter/services.dart';
+import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
+
+import 'AjouterParcours.dart';
 
 class AfficherParcours extends StatefulWidget {
   const AfficherParcours({super.key});
@@ -13,150 +16,264 @@ class AfficherParcours extends StatefulWidget {
   _AfficherParcoursState createState() => _AfficherParcoursState();
 }
 
-class _AfficherParcoursState extends State<AfficherParcours> with SingleTickerProviderStateMixin {
-  TextEditingController _searchController = TextEditingController();
-  DataBaseCrud db = DataBaseCrud.databaseInstance();
-  late List<Parcours> parcours;
-  Map<Parcours,int> effectifs = new Map();
-  String s = '';
-
-  late Ticker ticker;
-
-  Future<List<Parcours>> getParcours(String s) async {
-    parcours =  await db.getParcoursWithPattern(s);
-    for (Parcours parcour in parcours){
-      int effectif = await getEffectifs(parcour);
-      effectifs.putIfAbsent(parcour, ()  => effectif);
-    }
+class _AfficherParcoursState extends State<AfficherParcours>
+    with SingleTickerProviderStateMixin {
+  void state() {
     setState(() {});
-    return parcours;
   }
-  Future<int> getEffectifs(Parcours parcour) async {
-     return await db.getEffectifs(parcour);
+
+  FocusScopeNode focusScopeNode = FocusScopeNode();
+
+  late AnimationController _animationController;
+  double squareScale = 1;
+
+  String searched = '';
+
+  List<ParcoursFormatted> classes = [];
+  List<ParcoursFormatted> searchedclasses = [];
+
+  Future<List<ParcoursFormatted>> fetchdatas() async {
+    classes = await globals.db.getFormattedParcours();
+    if (searched.isEmpty) {
+      searchedclasses = classes;
+    } else {
+      searchedclasses =
+          await globals.db.getFormattedParcoursWithPattern(searched);
+    }
+    return searchedclasses;
   }
-  int count = 1;
+
+  void add() {
+    double height = MediaQuery.of(context).size.height;
+    showModalBottomSheet(
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(40.0))),
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 9, bottom: 5),
+              child: Center(
+                  child: Container(
+                width: 70,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.black26,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              )),
+            ),
+            SizedBox(
+              height: height * 0.8 <= 600 ? height * 0.8 : 600,
+              child: AjouterParcours(
+                state: state,
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
-    // TODO: implement initState
-    getParcours(s);
+    fetchdatas();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+      lowerBound: 0.9,
+      upperBound: 1,
+      value: 1,
+    );
+
+    _animationController.addListener(() {
+      setState(() {
+        squareScale = _animationController.value;
+      });
+    });
+
+    _animationController.drive(CurveTween(curve: Curves.fastOutSlowIn));
     super.initState();
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(15),
-          scrollDirection: Axis.vertical,
-          child: Column(
-            children: [
-              const Text(
-                'Liste des Classes',
-                style: TextStyle(fontSize: 24.0),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16.0),
-              Row(
-                children: [
-                  const SizedBox(height: 16.0),
-                  Container(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search),
-                        labelText: 'Libelle Classe',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.clear),
-                          onPressed: () {
-                            getParcours('');
-                            _searchController.clear();
-                          },
-                        ),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          s = value;
-                        });
-                        // Effectuez une action lorsque le texte de recherche change
-                        // par exemple, filtrez une liste ou effectuez une recherche dans une base de données
-                        print(value);
-                      },
-                    ),
-                    width: 350,
-                  )
-                ],
-              ),
-              const SizedBox(height: 16.0),
-              ListView(
-                padding: const EdgeInsetsDirectional.all(2),
-                shrinkWrap: true,
-                children: [
-                  FutureBuilder<Object>(
-                    future: getParcours(s),
-                    builder: (context, asyncsnapshot) {
-                      // While waiting for the data to load, display a loading indicator
-                      return ListView.builder(
-                          itemCount: parcours.length, //taille de notre tab
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Card(
-                              color: Colors.white,
-                              elevation: 2.0,
-                              child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: Colors.blueGrey,
-                                    child: Icon(Icons.school),
-                                  ),
-                                  title: Text(
-                                    'Classe : ${parcours[index].libelle}',
-                                    style: TextStyle(color: Colors.black),
-                                  ),
-                                  subtitle: Text(
-                                    'Effectif enregistré : ${effectifs[parcours[index]]}'
-                                  ),
-                                  trailing: Container(
-                                    height: 50,
-                                    width: 112,
-                                    child: ButtonBar(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            IconButton(
-                                                icon: Icon(Icons.edit),
-                                                onPressed: () {
-                                                  CustomFloatingActionButton.add(context, AjouterParcours(modeModifier: true, idParcour: parcours[index].id));
-                                                  //TODO : renvoyer sur la page de modification d'un parcour
-                                                }),
-                                            IconButton(
-                                              onPressed: () {
-                                                db.deleteParcours(parcours[index]);
-                                                // Action à effectuer lors du clic sur le bouton
-                                                //TODO : appeler supprimer, demander la confirmation, supprimer, envoyer un toast
-                                              },
-                                              icon: Icon(Icons.delete),
-                                              color: Colors.red,
-                                            ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )),
-                            );
-                          });
-                    }
-                    ,
-                  )
-                ],
-              )
-              
-            ],
+    return Scaffold(
+      floatingActionButton: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          _animationController.reverse();
+        },
+        onTapDown: (dp) {
+          _animationController.reverse();
+        },
+        onTapUp: (dp) {
+          Timer(const Duration(milliseconds: 150), () {
+            _animationController.fling();
+          });
+        },
+        onTapCancel: () {
+          _animationController.fling();
+        },
+        child: Transform.scale(
+          scale: squareScale,
+          child: FloatingActionButton(
+            onPressed: add,
+            child: const Icon(Icons.add),
           ),
         ),
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        });
+      ),
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: () {
+            focusScopeNode.unfocus();
+          },
+          child: FocusScope(
+            node: focusScopeNode,
+            child: Container(
+              alignment: Alignment.center,
+              child: FutureBuilder<List<ParcoursFormatted>>(
+                  future: fetchdatas(),
+                  builder: (context, snapshot) {
+                    debugPrint('entered: ' +
+                        snapshot.hasData.toString() +
+                        snapshot.data.toString() +
+                        snapshot.connectionState.toString());
+                    if (classes.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'Ajoutez des classes pour les voir ici',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w300),
+                        ),
+                      );
+                    } else {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                              ),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                  start: 16.0,
+                                  top: 16.0,
+                                  end: 16.0,
+                                  bottom: 16),
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Container(
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 450),
+                                  child: Card(
+                                    shadowColor:
+                                        Theme.of(context).primaryColorLight,
+                                    elevation: 5,
+                                    child: TextField(
+                                      onChanged: (value) {
+                                        setState(() {
+                                          searched = value;
+                                        });
+                                      },
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'[0-9a-zA-Zé ]')),
+                                        NameTextInputFormatter(),
+                                      ],
+                                      decoration: InputDecoration(
+                                          hintText: 'Classe',
+                                          border: InputBorder.none,
+                                          prefixIcon: Icon(
+                                            Icons.search,
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                          )),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Builder(builder: (context) {
+                            if (searchedclasses.isEmpty) {
+                              return const Expanded(
+                                child: Center(
+                                  child: Text(
+                                    'Aucune correspondance',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                ),
+                              );
+                            }
+                            return Expanded(
+                              child: ListView.builder(
+                                  keyboardDismissBehavior:
+                                      ScrollViewKeyboardDismissBehavior.onDrag,
+                                  itemCount: searchedclasses.length,
+                                  itemBuilder:
+                                      (BuildContext context, int position) {
+                                    EdgeInsetsGeometry bottompadding;
+                                    if (position ==
+                                        searchedclasses.length - 1) {
+                                      bottompadding =
+                                          const EdgeInsets.only(bottom: 100);
+                                    } else {
+                                      bottompadding = EdgeInsets.zero;
+                                    }
+                                    return Padding(
+                                      padding: const EdgeInsetsDirectional.only(
+                                          start: 16.0, top: 16.0, end: 16.0),
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        child: Container(
+                                          padding: bottompadding,
+                                          constraints: const BoxConstraints(
+                                              maxWidth: 450),
+                                          child: ParcoursCard(
+                                            parcours: ParcoursFormatted(
+                                              id: searchedclasses[position].id,
+                                              libelle: searchedclasses[position]
+                                                  .libelle,
+                                              effectif:
+                                                  searchedclasses[position]
+                                                      .effectif,
+                                            ),
+                                            db: globals.db,
+                                            context: context,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            );
+                          }),
+                        ],
+                      );
+                    }
+                  }),
+            ),
+          ),
+        ),
+      ),
+    );
   }
-//paramétrage de la fonction
-
 }

@@ -1,50 +1,53 @@
 import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-
-import '../../Db/DataBaseCrud.dart';
-import '../../textinputformatters/DecimalTextInputFormatter.dart';
-import '../../textinputformatters/NameTextInputFormatter.dart';
+import 'package:crud_ecole/globals.dart' as globals;
+import 'package:crud_ecole/textinputformatters/DecimalTextInputFormatter.dart';
+import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterEtudiant extends StatefulWidget {
-  const AjouterEtudiant({Key? key}) : super(key: key);
-
+  final Function state;
+  const AjouterEtudiant({super.key, required this.state});
   @override
   // ignore: library_private_types_in_public_api
   _AjouterEtudiantState createState() => _AjouterEtudiantState();
 }
 
 class _AjouterEtudiantState extends State<AjouterEtudiant> {
-  FocusScopeNode focusScopeNode = FocusScopeNode();
+  final fToast = FToast();
 
-  final DataBaseCrud db = DataBaseCrud.databaseInstance();
+  FocusScopeNode focusScopeNode = FocusScopeNode();
+  final FocusNode _dropdownFocusNode = FocusNode();
+
+  TextEditingController moyMathController = TextEditingController();
 
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
-  late Map<int, String> classes = {};
+  Map<int, String> classes = {};
 
-  late List<String> mats = [];
+  List<String> mats = [];
 
   final _formKey = GlobalKey<FormState>();
 
   late String matricule;
   late String nom;
   late String prenom;
-  DateTime birthdate = DateTime.parse("2000-01-01");
+  DateTime birthdate = DateTime.parse("1700-01-01");
   late int classe;
   late double moyMath;
   late double moyInfo;
 
   TextEditingController dateController = TextEditingController();
 
-  void fetchmats() async {
-    final datas = await db.getEtudiantsMat();
+  void fetchMats() async {
+    final datas = await globals.db.getEtudiantsMat();
     mats = datas;
   }
 
-  Future<Map<int, String>> fetchclasses() async {
-    final datas = await db.getParcours();
+  Future<Map<int, String>> fetchClasses() async {
+    final datas = await globals.db.getParcours();
     classes = datas.fold<Map<int, String>>({}, (map, classe) {
       map[classe.id] = classe.libelle;
       return map;
@@ -55,31 +58,59 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: birthdate,
+      initialDate: DateTime.parse("2000-01-01"),
       firstDate: DateTime.parse("1900-01-01"),
       lastDate: DateTime.now().subtract(
         const Duration(days: 365 * 10),
       ),
     );
-    if (picked != birthdate && picked != null) {
-      setState(() {
+    if (picked != null) {
+      // ignore: use_build_context_synchronously
+      FocusScope.of(context).requestFocus(_dropdownFocusNode);
+      if (picked != birthdate) {
         birthdate = picked;
         dateController.value = TextEditingValue(text: formatter.format(picked));
-      });
+      }
     }
   }
 
+  Widget buildToastChild() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Theme.of(context).primaryColorLight,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check,
+              color: Theme.of(context).colorScheme.inverseSurface),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(
+            "Etudiant ajouté",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     // Assign data within the initState() method
-    fetchmats();
-    fetchclasses();
+    fetchMats();
+    fetchClasses();
   }
 
   @override
   Widget build(BuildContext context) {
+    fToast.init(context);
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -90,14 +121,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
         child: FocusScope(
           node: focusScopeNode,
           child: ListView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            physics: const BouncingScrollPhysics(),
             children: <Widget>[
               Padding(
                 padding: const EdgeInsetsDirectional.only(
                   start: 16.0,
                   end: 16.0,
                   top: 5.0,
-                  bottom: 20.0,
                 ),
                 child: Container(
                   alignment: Alignment.center,
@@ -214,45 +244,40 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                             ),
                           ),
                           const SizedBox(height: 16.0),
-                          Container(
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.zero,
-                            height: 59,
-                            child: FutureBuilder<Object>(
-                                future: fetchclasses(),
-                                builder: (context, snapshot) {
-                                  return DropdownButtonFormField(
-                                    enableFeedback: true,
-                                    iconEnabledColor:
-                                        Theme.of(context).primaryColor,
-                                    menuMaxHeight: 220,
-                                    autovalidateMode:
-                                        AutovalidateMode.onUserInteraction,
-                                    items: classes.entries
-                                        .map((MapEntry<int, String> entry) {
-                                      return DropdownMenuItem<int>(
-                                        value: entry.key,
-                                        child: Text(entry.value),
-                                      );
-                                    }).toList(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        classe = value!;
-                                      });
-                                    },
-                                    decoration: const InputDecoration(
-                                        contentPadding:
-                                            EdgeInsets.only(left: 10),
-                                        labelText: "Classe",
-                                        border: UnderlineInputBorder()),
-                                    validator: (value) {
-                                      return value == null
-                                          ? 'Veuillez choisir la classe'
-                                          : null;
-                                    },
-                                  );
-                                }),
-                          ),
+                          FutureBuilder<Object>(
+                              future: fetchClasses(),
+                              builder: (context, snapshot) {
+                                return DropdownButtonFormField(
+                                  focusNode: _dropdownFocusNode,
+                                  enableFeedback: true,
+                                  iconEnabledColor:
+                                      Theme.of(context).primaryColor,
+                                  menuMaxHeight: 220,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  items: classes.entries
+                                      .map((MapEntry<int, String> entry) {
+                                    return DropdownMenuItem<int>(
+                                      value: entry.key,
+                                      child: Text(entry.value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    classe = value!;
+                                  },
+                                  decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.only(left: 10),
+                                      labelText: "Classe",
+                                      border: UnderlineInputBorder()),
+                                  icon: const Icon(
+                                      Icons.keyboard_arrow_down_sharp),
+                                  validator: (value) {
+                                    return value == null
+                                        ? 'Veuillez choisir la classe'
+                                        : null;
+                                  },
+                                );
+                              }),
                           const SizedBox(height: 16.0),
                           TextFormField(
                             autovalidateMode:
@@ -362,7 +387,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                     _formKey.currentState!.save();
-                                    db.insertEtudiant(Etudiant(
+                                    globals.db.insertEtudiant(Etudiant(
                                         matricule: matricule,
                                         nom: nom,
                                         prenom: prenom,
@@ -371,10 +396,15 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                         moyMath: moyMath,
                                         moyInfo: moyInfo,
                                         classeId: classe));
-                                    setState(() {
-                                      fetchmats();
-                                    });
+                                    widget.state;
+                                    fetchMats();
                                     _formKey.currentState!.reset();
+
+                                    fToast.showToast(
+                                      gravity: ToastGravity.TOP,
+                                      child: buildToastChild(),
+                                      toastDuration: const Duration(seconds: 2),
+                                    );
                                   }
                                 },
                                 child: const Text('Valider'),

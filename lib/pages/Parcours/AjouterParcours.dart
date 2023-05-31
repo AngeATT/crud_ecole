@@ -2,10 +2,11 @@ import 'package:crud_ecole/Db/DataBaseCrud.dart';
 import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../../textinputformatters/NameTextInputFormatter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterParcours extends StatefulWidget {
+  final Function state;
   final bool modeModifier;
   final int idParcour;
    AjouterParcours(
@@ -20,6 +21,8 @@ class _AjouterParcoursState extends State<AjouterParcours> {
   final bool modeModifier;
   final int idParcour;
   late String parcourLibelle;
+  final fToast = FToast();
+
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
   final DataBaseCrud db = DataBaseCrud.databaseInstance();
@@ -51,6 +54,32 @@ class _AjouterParcoursState extends State<AjouterParcours> {
     return classes;
   }
 
+  Widget buildToastChild() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Theme.of(context).primaryColorLight,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check,
+              color: Theme.of(context).colorScheme.inverseSurface),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(
+            "Classe ajoutée",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -64,6 +93,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
 
   @override
   Widget build(BuildContext context) {
+    fToast.init(context);
     return GestureDetector(
       onTap: () {
         focusScopeNode.unfocus();
@@ -71,7 +101,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
       child: FocusScope(
         node: focusScopeNode,
         child: ListView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          physics: const BouncingScrollPhysics(),
           children: <Widget>[
             Padding(
               padding: const EdgeInsetsDirectional.only(
@@ -119,11 +149,14 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return 'Veuillez entrer le Libellé';
-                                  } else if (classes.contains(value.trim())) {
+                                  } else if (classes.contains(value.trim().toUpperCase())) {
                                     if (modeModifier){
-                                      return value == parcourLibelle ? "Le libéllé n'a pas changé" : "Libellé déjà utilisé";
+                                      return value.trim().toUpperCase() == parcourLibelle.trim().toUpperCase() ? "Le libéllé n'a pas changé" : "Libellé déjà utilisé";
                                     }
                                     return "Libellé déjà utilisé";
+                                  }else if (value.trim().toUpperCase() ==
+                                      'TOUT') {
+                                    return "Une classe ne peut pas s'appeler tout";
                                   } else {
                                     return null;
                                   }
@@ -154,6 +187,11 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                     fetchdatas();
                                   });
                                   _formKey.currentState!.reset();
+                                  fToast.showToast(
+                                    gravity: ToastGravity.TOP,
+                                    child: buildToastChild(),
+                                    toastDuration: const Duration(seconds: 2),
+                                  );
                                 }
                               },
                               child: const Text('Valider'),
