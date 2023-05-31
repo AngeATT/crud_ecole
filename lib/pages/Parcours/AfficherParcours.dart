@@ -40,7 +40,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
       searchedclasses =
           await globals.db.getFormattedParcoursWithPattern(searched);
     }
-    setState(() {});
+    //setState(() {});
     return searchedclasses;
   }
 
@@ -148,10 +148,6 @@ class _AfficherParcoursState extends State<AfficherParcours>
               child: FutureBuilder<List<ParcoursFormatted>>(
                   future: fetchdatas(),
                   builder: (context, snapshot) {
-                    debugPrint('entered: ' +
-                        snapshot.hasData.toString() +
-                        snapshot.data.toString() +
-                        snapshot.connectionState.toString());
                     if (classes.isEmpty) {
                       return const Center(
                         child: Text(
