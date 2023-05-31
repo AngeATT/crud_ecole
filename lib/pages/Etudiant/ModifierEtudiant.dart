@@ -9,7 +9,9 @@ import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class ModifierEtudiant extends StatefulWidget {
   final Function state;
-  const ModifierEtudiant({super.key, required this.state});
+  final Etudiant chosenEt;
+  const ModifierEtudiant(
+      {super.key, required this.state, required this.chosenEt});
   @override
   // ignore: library_private_types_in_public_api
   _ModifierEtudiantState createState() => _ModifierEtudiantState();
@@ -21,8 +23,6 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
   final FocusNode _dropdownFocusNode = FocusNode();
 
-  TextEditingController moyMathController = TextEditingController();
-
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   Map<int, String> classes = {};
@@ -31,18 +31,23 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
 
   final _formKey = GlobalKey<FormState>();
 
-  late String matricule;
-  late String nom;
-  late String prenom;
-  DateTime birthdate = DateTime.parse("1700-01-01");
-  late int classe;
-  late double moyMath;
-  late double moyInfo;
+  String matricule = '';
+  String nom = '';
+  String prenom = '';
+  DateTime birthdate = DateTime.parse('1700-01-01');
+  int classeId = 0;
+  double moyMath = 0;
+  double moyInfo = 0;
 
+  TextEditingController matriculeController = TextEditingController();
+  TextEditingController nomController = TextEditingController();
+  TextEditingController prenomController = TextEditingController();
   TextEditingController dateController = TextEditingController();
+  TextEditingController moyMathController = TextEditingController();
+  TextEditingController moyInfoController = TextEditingController();
 
   void fetchMats() async {
-    final datas = await globals.db.getEtudiantsMat();
+    final datas = await globals.db.getEtudiantsMatWithout(matricule);
     mats = datas;
   }
 
@@ -90,7 +95,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
             width: 12.0,
           ),
           Text(
-            "Etudiant ajouté",
+            "Etudiant modifié",
             style: TextStyle(
               color: Theme.of(context).colorScheme.inverseSurface,
             ),
@@ -100,12 +105,30 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
     );
   }
 
+  void fillchamps() {
+    matricule = widget.chosenEt.matricule;
+    nom = widget.chosenEt.nom;
+    prenom = widget.chosenEt.prenom;
+    birthdate = DateTime.parse(widget.chosenEt.dateAnniv);
+    classeId = widget.chosenEt.classeId;
+    moyMath = widget.chosenEt.moyMath;
+    moyInfo = widget.chosenEt.moyInfo;
+
+    matriculeController.value = TextEditingValue(text: matricule);
+    nomController.value = TextEditingValue(text: nom);
+    prenomController.value = TextEditingValue(text: prenom);
+    dateController.value = TextEditingValue(text: formatter.format(birthdate));
+    moyMathController.value = TextEditingValue(text: moyMath.toString());
+    moyInfoController.value = TextEditingValue(text: moyInfo.toString());
+  }
+
   @override
   void initState() {
-    super.initState();
     // Assign data within the initState() method
+    fillchamps();
     fetchMats();
     fetchClasses();
+    super.initState();
   }
 
   @override
@@ -163,6 +186,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                             onSaved: (value) {
                               matricule = value!;
                             },
+                            controller: matriculeController,
                           ),
                           const SizedBox(height: 16.0),
                           TextFormField(
@@ -187,6 +211,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                             onSaved: (value) {
                               nom = value!.trim();
                             },
+                            controller: nomController,
                           ),
                           const SizedBox(height: 16.0),
                           TextFormField(
@@ -215,6 +240,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                             onSaved: (value) {
                               prenom = value!.trim();
                             },
+                            controller: prenomController,
                           ),
                           const SizedBox(height: 16.0),
                           GestureDetector(
@@ -263,7 +289,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                     );
                                   }).toList(),
                                   onChanged: (value) {
-                                    classe = value!;
+                                    classeId = value!;
                                   },
                                   decoration: const InputDecoration(
                                       contentPadding: EdgeInsets.only(left: 10),
@@ -276,6 +302,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                         ? 'Veuillez choisir la classe'
                                         : null;
                                   },
+                                  value: classeId,
                                 );
                               }),
                           const SizedBox(height: 16.0),
@@ -326,6 +353,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                 //nothing to catch
                               }
                             },
+                            controller: moyMathController,
                           ),
                           const SizedBox(height: 16.0),
                           TextFormField(
@@ -374,6 +402,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                 //nothing to catch
                               }
                             },
+                            controller: moyInfoController,
                           ),
                           const SizedBox(height: 20.0),
                           Container(
@@ -387,7 +416,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                     _formKey.currentState!.save();
-                                    globals.db.insertEtudiant(Etudiant(
+                                    globals.db.updateEtudiant(Etudiant(
                                         matricule: matricule,
                                         nom: nom,
                                         prenom: prenom,
@@ -395,7 +424,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                             .format(birthdate),
                                         moyMath: moyMath,
                                         moyInfo: moyInfo,
-                                        classeId: classe));
+                                        classeId: classeId));
                                     widget.state;
                                     fetchMats();
                                     _formKey.currentState!.reset();

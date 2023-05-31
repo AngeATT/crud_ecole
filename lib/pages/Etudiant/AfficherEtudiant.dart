@@ -1,12 +1,10 @@
 import 'dart:async';
-
 import 'package:crud_ecole/models/EtudiantFormatted.dart';
 import 'package:crud_ecole/pages/Etudiant/AjouterEtudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:crud_ecole/globals.dart' as globals;
 import 'package:crud_ecole/customwidgets/EtudiantCard.dart';
-import 'package:intl/intl.dart';
 
 class AfficherEtudiant extends StatefulWidget {
   const AfficherEtudiant({super.key});
@@ -312,11 +310,8 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                                   searchedetudiants[position]
                                                       .prenom,
                                               dateAnniv:
-                                                  DateFormat('dd-MM-yyyy')
-                                                      .format(DateTime.parse(
-                                                          searchedetudiants[
-                                                                  position]
-                                                              .dateAnniv)),
+                                                  searchedetudiants[position]
+                                                      .dateAnniv,
                                               moyMath:
                                                   searchedetudiants[position]
                                                       .moyMath,
@@ -330,7 +325,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                                   searchedetudiants[position]
                                                       .classeId,
                                             ),
-                                            db: globals.db,
+                                            state: state,
                                             context: context,
                                           ),
                                         ),

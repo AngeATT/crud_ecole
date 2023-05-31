@@ -1,5 +1,6 @@
 import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:crud_ecole/models/ParcoursFormatted.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -69,26 +70,6 @@ class DataBaseCrud {
         conflictAlgorithm: ConflictAlgorithm.abort);
   }
 
-  Future<List<Etudiant>> getEtudiants() async {
-    final List<Map<String, dynamic>>? maps =
-        await db?.query(ETUDIANT_TABLE_NAME);
-    if (maps != null) {
-      return List.generate(maps.length, (i) {
-        return Etudiant(
-          matricule: maps[i][ETUDIANT_COLUMN_MAT],
-          nom: maps[i][ETUDIANT_COLUMN_NOM],
-          prenom: maps[i][ETUDIANT_COLUMN_PRENOM],
-          dateAnniv: maps[i][ETUDIANT_COLUMN_ANNIV],
-          moyMath: maps[i][ETUDIANT_COLUMN_MATH],
-          moyInfo: maps[i][ETUDIANT_COLUMN_INFO],
-          classeId: maps[i][ETUDIANT_COLUMN_CLASSE_ID],
-        );
-      });
-    } else {
-      return [];
-    }
-  }
-
   Future<List<EtudiantFormatted>> getFormattedEtudiants() async {
     final List<Map<String, dynamic>>? maps = await db?.rawQuery('''
 SELECT $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_MAT,
@@ -101,6 +82,7 @@ $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_INFO,
 $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_LIBELLE
 FROM $ETUDIANT_TABLE_NAME JOIN $PARCOURS_TABLE_NAME
 ON $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_CLASSE_ID = $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_CODE
+ORDER BY upper($ETUDIANT_COLUMN_MAT)
 ''');
     if (maps != null) {
       return List.generate(maps.length, (i) {
@@ -128,7 +110,7 @@ SELECT $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_MAT,
 $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_NOM,
 $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_PRENOM,
 $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_ANNIV,
-$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_CLASSE_ID
+$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_CLASSE_ID,
 $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_MATH,
 $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_INFO,
 $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_LIBELLE
@@ -147,7 +129,7 @@ WHERE
       }
       query += "$CLASSE_COLUMN_LIBELLE LIKE '$classe'";
     }
-
+    query += " ORDER BY upper($ETUDIANT_COLUMN_MAT)";
     final List<Map<String, dynamic>>? maps = await db?.rawQuery(query);
 
     if (maps != null) {
@@ -156,8 +138,7 @@ WHERE
           matricule: maps[i][ETUDIANT_COLUMN_MAT],
           nom: maps[i][ETUDIANT_COLUMN_NOM],
           prenom: maps[i][ETUDIANT_COLUMN_PRENOM],
-          dateAnniv: DateFormat('dd-MM-yyyy')
-              .format(DateTime.parse(maps[i][ETUDIANT_COLUMN_ANNIV])),
+          dateAnniv: maps[i][ETUDIANT_COLUMN_ANNIV],
           classeId: maps[i][ETUDIANT_COLUMN_CLASSE_ID],
           moyMath: maps[i][ETUDIANT_COLUMN_MATH],
           moyInfo: maps[i][ETUDIANT_COLUMN_INFO],
@@ -188,6 +169,7 @@ WHERE
         where: '$ETUDIANT_COLUMN_MAT NOT LIKE ?',
         whereArgs: [chosen]);
     if (maps != null) {
+      debugPrint(chosen + maps.toString());
       return List.generate(maps.length, (i) {
         return maps[i][ETUDIANT_COLUMN_MAT];
       });
