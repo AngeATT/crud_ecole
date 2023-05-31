@@ -28,59 +28,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void add() {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
-    Widget widget = _selectedTabIndex == 0
-        ? AjouterParcours(modeModifier: false, idParcour: 0)
-        : AjouterEtudiant(state: null,);
-
-    if (height > width) {
-      showModalBottomSheet(
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(40.0))),
-        context: context,
-        builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 9, bottom: 5),
-                //height: 20,
-                child: Center(
-                    child: Container(
-                  width: 70,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                )),
-              ),
-              SizedBox(
-                height: height * 0.8,
-                child: widget,
-              )
-            ],
-          );
-        },
-      );
-    } else {
-      debugPrint('desktop');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('CRUD ECOLE'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: add,
-        child: const Icon(Icons.add),
       ),
       body: GestureDetector(
           behavior: HitTestBehavior.opaque,

@@ -316,6 +316,12 @@ GROUP BY $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_CODE
     await db!.delete(PARCOURS_TABLE_NAME,
         where: '$CLASSE_COLUMN_CODE = ?', whereArgs: [parcours.id]);
   }
+  Future<void> deleteParcoursById(int id) async {
+    await db!.delete(ETUDIANT_TABLE_NAME,where: '$ETUDIANT_COLUMN_CLASSE_ID = ?',whereArgs: [id]);
+    await db!.delete(PARCOURS_TABLE_NAME,
+        where: '$CLASSE_COLUMN_CODE = ?', whereArgs: [id]);
+  }
+
 
   Future<int> getEffectifs(Parcours parcours) async {
     if (db == null){

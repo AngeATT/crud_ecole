@@ -19,7 +19,8 @@ class AfficherParcours extends StatefulWidget {
 class _AfficherParcoursState extends State<AfficherParcours>
     with SingleTickerProviderStateMixin {
   void state() {
-    setState(() {});
+    setState(() {
+    });
   }
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
@@ -40,6 +41,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
       searchedclasses =
           await globals.db.getFormattedParcoursWithPattern(searched);
     }
+    setState(() {});
     return searchedclasses;
   }
 
@@ -68,7 +70,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
             ),
             SizedBox(
               height: height * 0.8 <= 600 ? height * 0.8 : 600,
-              child: AjouterParcours(modeModifier: false, idParcour: -1),
+              child: AjouterParcours(modeModifier: false, idParcour: -1,state: state,),
             )
           ],
         );
@@ -184,9 +186,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
                                     elevation: 5,
                                     child: TextField(
                                       onChanged: (value) {
-                                        setState(() {
                                           searched = value;
-                                        });
                                       },
                                       textCapitalization:
                                           TextCapitalization.sentences,
@@ -257,6 +257,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
                                             ),
                                             db: globals.db,
                                             context: context,
+                                            state: state
                                           ),
                                         ),
                                       ),

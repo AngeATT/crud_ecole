@@ -7,10 +7,11 @@ import 'package:crud_ecole/globals.dart' as globals;
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterParcours extends StatefulWidget {
+  final Function state;
   final bool modeModifier;
   final int idParcour;
    AjouterParcours(
-      {super.key,required this.modeModifier, required this.idParcour});
+      {super.key,required this.modeModifier, required this.idParcour, required this.state});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -70,7 +71,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
             width: 12.0,
           ),
           Text(
-            "Classe ajoutée",
+            modeModifier ?"Classe modifiée" : "Classe ajoutée",
             style: TextStyle(
               color: Theme.of(context).colorScheme.inverseSurface,
             ),
@@ -149,7 +150,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return 'Veuillez entrer le Libellé';
-                                  } else if (classes.contains(value.trim().toUpperCase())) {
+                                  } else if (classes.contains(value.trim())) {
                                     if (modeModifier){
                                       return value.trim().toUpperCase() == parcourLibelle.trim().toUpperCase() ? "Le libéllé n'a pas changé" : "Libellé déjà utilisé";
                                     }
@@ -183,9 +184,8 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                     await db.insertParcours(
                                         Parcours(id: 0, libelle: libelle));
                                   }
-                                  setState(() {
-                                    fetchdatas();
-                                  });
+                                  widget.state;
+                                  fetchdatas();
                                   _formKey.currentState!.reset();
                                   fToast.showToast(
                                     gravity: ToastGravity.TOP,
