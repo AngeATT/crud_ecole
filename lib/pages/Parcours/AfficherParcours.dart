@@ -19,8 +19,7 @@ class AfficherParcours extends StatefulWidget {
 class _AfficherParcoursState extends State<AfficherParcours>
     with SingleTickerProviderStateMixin {
   void state() {
-    setState(() {
-    });
+    setState(() {});
   }
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
@@ -70,7 +69,11 @@ class _AfficherParcoursState extends State<AfficherParcours>
             ),
             SizedBox(
               height: height * 0.8 <= 600 ? height * 0.8 : 600,
-              child: AjouterParcours(modeModifier: false, idParcour: -1,state: state,),
+              child: AjouterParcours(
+                modeModifier: false,
+                idParcour: -1,
+                state: state,
+              ),
             )
           ],
         );
@@ -186,7 +189,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
                                     elevation: 5,
                                     child: TextField(
                                       onChanged: (value) {
-                                          searched = value;
+                                        searched = value;
                                       },
                                       textCapitalization:
                                           TextCapitalization.sentences,
@@ -247,18 +250,19 @@ class _AfficherParcoursState extends State<AfficherParcours>
                                           constraints: const BoxConstraints(
                                               maxWidth: 450),
                                           child: ParcoursCard(
-                                            parcours: ParcoursFormatted(
-                                              id: searchedclasses[position].id,
-                                              libelle: searchedclasses[position]
-                                                  .libelle,
-                                              effectif:
-                                                  searchedclasses[position]
-                                                      .effectif,
-                                            ),
-                                            db: globals.db,
-                                            fContext: context,
-                                            state: state
-                                          ),
+                                              parcours: ParcoursFormatted(
+                                                id: searchedclasses[position]
+                                                    .id,
+                                                libelle:
+                                                    searchedclasses[position]
+                                                        .libelle,
+                                                effectif:
+                                                    searchedclasses[position]
+                                                        .effectif,
+                                              ),
+                                              db: globals.db,
+                                              fContext: context,
+                                              state: state),
                                         ),
                                       ),
                                     );

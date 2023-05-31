@@ -41,7 +41,7 @@ class globals{
     );
   }
 
-  static void showCenterToast(String msg){
+  static void showRegularToast(String msg){
     Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_SHORT,

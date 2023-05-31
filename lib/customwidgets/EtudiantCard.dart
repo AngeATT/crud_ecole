@@ -181,9 +181,10 @@ class EtudiantCard extends Card {
                                       try {
                                         db.deleteEtudiantByMat(
                                             etudiant.matricule);
-
+                                        globals.showRegularToast("Etudiant supprimé");
                                         Navigator.of(context).pop();
                                       } catch (e) {
+                                        globals.showRegularToast("Erreur lors de la suppression de l'étudiant");
                                       }
                                     },
                                   ),

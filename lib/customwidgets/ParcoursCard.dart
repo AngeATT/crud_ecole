@@ -4,7 +4,6 @@ import 'package:crud_ecole/models/ParcoursFormatted.dart';
 import 'package:flutter/material.dart';
 import 'package:crud_ecole/customwidgets/CustomFloatingActionButton.dart';
 import'package:crud_ecole/pages/Parcours/AjouterParcours.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 
 class ParcoursCard extends Card {
@@ -76,9 +75,9 @@ class ParcoursCard extends Card {
                                     // Perform the confirmation action here
                                     try{
                                       await db.deleteParcoursById(parcours.id);
-                                      globals.showToast(fContext,"Parcour supprimé");
+                                      globals.showRegularToast("Classe supprimé");
                                     }catch(e){
-                                      globals.showToast(fContext,"Parcour supprimé");
+                                      globals.showRegularToast("erreur lors de la suppression");
                                     }
                                     Navigator.of(context).pop();
                                   },
