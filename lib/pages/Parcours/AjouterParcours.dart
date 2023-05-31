@@ -3,10 +3,10 @@ import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:crud_ecole/globals.dart' as globals;
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterParcours extends StatefulWidget {
-  final Function state;
   final bool modeModifier;
   final int idParcour;
    AjouterParcours(
@@ -25,7 +25,7 @@ class _AjouterParcoursState extends State<AjouterParcours> {
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
-  final DataBaseCrud db = DataBaseCrud.databaseInstance();
+  final DataBaseCrud db = globals.db;
 
   List<String> classes = [];
 

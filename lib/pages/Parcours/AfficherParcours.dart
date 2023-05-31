@@ -68,9 +68,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
             ),
             SizedBox(
               height: height * 0.8 <= 600 ? height * 0.8 : 600,
-              child: AjouterParcours(
-                state: state,
-              ),
+              child: AjouterParcours(modeModifier: false, idParcour: -1),
             )
           ],
         );

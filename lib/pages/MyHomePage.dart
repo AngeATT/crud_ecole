@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
     double width = MediaQuery.of(context).size.width;
     Widget widget = _selectedTabIndex == 0
         ? AjouterParcours(modeModifier: false, idParcour: 0)
-        : const AjouterEtudiant();
+        : AjouterEtudiant(state: null,);
 
     if (height > width) {
       showModalBottomSheet(
