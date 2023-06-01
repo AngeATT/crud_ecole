@@ -8,8 +8,7 @@ import 'package:crud_ecole/textinputformatters/DecimalTextInputFormatter.dart';
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterEtudiant extends StatefulWidget {
-  final Function state;
-  const AjouterEtudiant({super.key, required this.state});
+  const AjouterEtudiant({super.key});
   @override
   // ignore: library_private_types_in_public_api
   _AjouterEtudiantState createState() => _AjouterEtudiantState();
@@ -20,6 +19,8 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
   final FocusNode _dropdownFocusNode = FocusNode();
+
+  Widget toastChild = const Text('');
 
   TextEditingController moyMathController = TextEditingController();
 
@@ -74,8 +75,18 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
     }
   }
 
-  Widget buildToastChild() {
-    return Container(
+  @override
+  void initState() {
+    super.initState();
+    // Assign data within the initState() method
+    fetchMats();
+    fetchClasses();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    fToast.init(context);
+    toastChild = Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
@@ -98,19 +109,6 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
         ],
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Assign data within the initState() method
-    fetchMats();
-    fetchClasses();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    fToast.init(context);
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -396,13 +394,13 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                         moyMath: moyMath,
                                         moyInfo: moyInfo,
                                         classeId: classe));
-                                    widget.state;
+                                    globals.streamController.add('');
                                     fetchMats();
                                     _formKey.currentState!.reset();
 
                                     fToast.showToast(
                                       gravity: ToastGravity.TOP,
-                                      child: buildToastChild(),
+                                      child: toastChild,
                                       toastDuration: const Duration(seconds: 2),
                                     );
                                   }

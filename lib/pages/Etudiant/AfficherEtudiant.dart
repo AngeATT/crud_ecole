@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:crud_ecole/globals.dart' as globals;
 import 'package:crud_ecole/customwidgets/EtudiantCard.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AfficherEtudiant extends StatefulWidget {
   const AfficherEtudiant({super.key});
@@ -16,11 +17,11 @@ class AfficherEtudiant extends StatefulWidget {
 
 class _AfficherEtudiantState extends State<AfficherEtudiant>
     with SingleTickerProviderStateMixin {
-  void state() {
-    setState(() {});
-  }
+  final fToast = FToast();
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
+
+  Widget toastChild = const Text('');
 
   late AnimationController _animationController;
   double squareScale = 1;
@@ -28,11 +29,11 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
   String searched = '';
   String chosenclass = 'Tout';
 
-  List<EtudiantFormatted> etudiants = [];
-  List<EtudiantFormatted> searchedetudiants = [];
-  List<String> classes = [];
+  List<EtudiantFormatted>? etudiants;
+  List<EtudiantFormatted>? searchedetudiants;
+  List<String>? classes;
 
-  Future<List<EtudiantFormatted>> fetchdatas() async {
+  Future<List<EtudiantFormatted>>? fetchdatas() async {
     etudiants = await globals.db.getFormattedEtudiants();
     if (searched.isEmpty && chosenclass == 'Tout') {
       searchedetudiants = etudiants;
@@ -41,13 +42,21 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
           .getFormattedEtudiantsWithPattern(searched, chosenclass);
     }
     setState(() {});
-    return searchedetudiants;
+    return searchedetudiants!;
   }
 
   Future<List<String>> fetchclasses() async {
     classes = await globals.db.getNotEmptyParcoursLibelle();
-    classes.insert(0, 'Tout');
-    return classes;
+    classes!.insert(0, 'Tout');
+    return classes!;
+  }
+
+  void showdeletetoast() {
+    fToast.showToast(
+      gravity: ToastGravity.TOP,
+      child: toastChild,
+      toastDuration: const Duration(seconds: 2),
+    );
   }
 
   @override
@@ -55,6 +64,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
     // Assign data within the initState() method
     fetchdatas();
     fetchclasses();
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -70,6 +80,18 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
     });
 
     _animationController.drive(CurveTween(curve: Curves.fastOutSlowIn));
+    globals.streamController.stream.listen((event) {
+      {
+        if (event != 'nope') {
+          if (event == chosenclass) {
+            chosenclass = 'Tout';
+          }
+          fetchdatas();
+          fetchclasses();
+          setState(() {});
+        }
+      }
+    });
     super.initState();
   }
 
@@ -104,9 +126,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
             ),
             SizedBox(
               height: height * 0.8 <= 600 ? height * 0.8 : 600,
-              child: AjouterEtudiant(
-                state: state,
-              ),
+              child: const AjouterEtudiant(),
             )
           ],
         );
@@ -116,6 +136,31 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
 
   @override
   Widget build(BuildContext context) {
+    fToast.init(context);
+
+    toastChild = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Theme.of(context).primaryColorLight,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check,
+              color: Theme.of(context).colorScheme.inverseSurface),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(
+            "Etudiant suprimé",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+          ),
+        ],
+      ),
+    );
     return SafeArea(
       child: Scaffold(
         floatingActionButton: GestureDetector(
@@ -153,7 +198,11 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
               child: FutureBuilder<Object>(
                   future: fetchdatas(),
                   builder: (context, snapshot) {
-                    if (etudiants.isEmpty) {
+                    if (etudiants == null) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (etudiants!.isEmpty) {
                       return const Center(
                         child: Text(
                           'Ajoutez des étudiants pour les voir ici',
@@ -219,42 +268,53 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                       FutureBuilder<Object>(
                                           future: fetchclasses(),
                                           builder: (context, snapshot) {
-                                            return Expanded(
-                                              child: Card(
-                                                elevation: 5,
-                                                shadowColor: Theme.of(context)
-                                                    .primaryColorLight,
-                                                child: DropdownButtonFormField(
-                                                  value: chosenclass,
-                                                  autovalidateMode:
-                                                      AutovalidateMode
-                                                          .onUserInteraction,
-                                                  iconEnabledColor:
-                                                      Theme.of(context)
-                                                          .primaryColor,
-                                                  items: classes
-                                                      .map((String item) {
-                                                    return DropdownMenuItem<
-                                                        String>(
-                                                      value: item,
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(left: 10),
-                                                        child: Text(item),
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                                  onChanged: (value) {
-                                                    chosenclass = value!;
-                                                  },
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border: InputBorder.none,
+                                            if (classes == null) {
+                                              return const Expanded(
+                                                child: Center(
+                                                  child:
+                                                      LinearProgressIndicator(),
+                                                ),
+                                              );
+                                            } else {
+                                              return Expanded(
+                                                child: Card(
+                                                  elevation: 5,
+                                                  shadowColor: Theme.of(context)
+                                                      .primaryColorLight,
+                                                  child:
+                                                      DropdownButtonFormField(
+                                                    value: chosenclass,
+                                                    autovalidateMode:
+                                                        AutovalidateMode
+                                                            .onUserInteraction,
+                                                    iconEnabledColor:
+                                                        Theme.of(context)
+                                                            .primaryColor,
+                                                    items: classes!
+                                                        .map((String item) {
+                                                      return DropdownMenuItem<
+                                                          String>(
+                                                        value: item,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .only(
+                                                                  left: 10),
+                                                          child: Text(item),
+                                                        ),
+                                                      );
+                                                    }).toList(),
+                                                    onChanged: (value) {
+                                                      chosenclass = value!;
+                                                    },
+                                                    decoration:
+                                                        const InputDecoration(
+                                                      border: InputBorder.none,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            );
+                                              );
+                                            }
                                           })
                                     ],
                                   ),
@@ -263,7 +323,11 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                             ),
                           ),
                           Builder(builder: (context) {
-                            if (searchedetudiants.isEmpty) {
+                            if (searchedetudiants == null) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (searchedetudiants!.isEmpty) {
                               return const Expanded(
                                 child: Center(
                                   child: Text(
@@ -279,12 +343,12 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                               child: ListView.builder(
                                   keyboardDismissBehavior:
                                       ScrollViewKeyboardDismissBehavior.onDrag,
-                                  itemCount: searchedetudiants.length,
+                                  itemCount: searchedetudiants!.length,
                                   itemBuilder:
                                       (BuildContext context, int position) {
                                     EdgeInsetsGeometry bottompadding;
                                     if (position ==
-                                        searchedetudiants.length - 1) {
+                                        searchedetudiants!.length - 1) {
                                       bottompadding =
                                           const EdgeInsets.only(bottom: 100);
                                     } else {
@@ -302,31 +366,31 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                           child: EtudiantCard(
                                             etudiant: EtudiantFormatted(
                                               matricule:
-                                                  searchedetudiants[position]
+                                                  searchedetudiants![position]
                                                       .matricule,
-                                              nom: searchedetudiants[position]
+                                              nom: searchedetudiants![position]
                                                   .nom,
                                               prenom:
-                                                  searchedetudiants[position]
+                                                  searchedetudiants![position]
                                                       .prenom,
                                               dateAnniv:
-                                                  searchedetudiants[position]
+                                                  searchedetudiants![position]
                                                       .dateAnniv,
                                               moyMath:
-                                                  searchedetudiants[position]
+                                                  searchedetudiants![position]
                                                       .moyMath,
                                               moyInfo:
-                                                  searchedetudiants[position]
+                                                  searchedetudiants![position]
                                                       .moyInfo,
                                               classe:
-                                                  searchedetudiants[position]
+                                                  searchedetudiants![position]
                                                       .classe,
                                               classeId:
-                                                  searchedetudiants[position]
+                                                  searchedetudiants![position]
                                                       .classeId,
                                             ),
-                                            state: state,
                                             context: context,
+                                            showdeletetoast: showdeletetoast,
                                           ),
                                         ),
                                       ),

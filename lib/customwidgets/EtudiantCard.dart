@@ -1,14 +1,17 @@
+import 'package:crud_ecole/models/ParcoursFormatted.dart';
 import 'package:crud_ecole/pages/Etudiant/ModifierEtudiant.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/EtudiantFormatted.dart';
+import 'package:crud_ecole/models/EtudiantFormatted.dart';
+import 'package:crud_ecole/globals.dart' as globals;
 
 class EtudiantCard extends Card {
   EtudiantCard(
       {super.key,
       required EtudiantFormatted etudiant,
       required BuildContext context,
-      required final Function state})
+      required Function showdeletetoast})
       : super(
           color: Theme.of(context).colorScheme.onPrimary,
           shadowColor: Theme.of(context).primaryColorLight,
@@ -134,7 +137,6 @@ class EtudiantCard extends Card {
                                   height:
                                       height * 0.8 <= 600 ? height * 0.8 : 600,
                                   child: ModifierEtudiant(
-                                    state: state,
                                     chosenEt: etudiant.getEtudiant(),
                                   ),
                                 )
@@ -156,7 +158,55 @@ class EtudiantCard extends Card {
                     InkWell(
                       highlightColor: const Color.fromARGB(50, 158, 158, 158),
                       borderRadius: BorderRadius.circular(20),
-                      onTap: () {},
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext builder) {
+                              return CupertinoAlertDialog(
+                                title: const Text("Confirmer?"),
+                                content: Text(
+                                    "Voulez-vous vraiment supprimer l'étudiant matriculé ${etudiant.matricule} ? Cette action est irréversible"),
+                                actions: [
+                                  CupertinoDialogAction(
+                                    child: Text(
+                                      "Non",
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .primaryColorDark),
+                                    ),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                  ),
+                                  CupertinoDialogAction(
+                                    child: Text(
+                                      "Oui",
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .primaryColorDark),
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.of(context).pop();
+                                      ParcoursFormatted classe = await globals
+                                          .db
+                                          .getOneFormattedParcours(
+                                              etudiant.classeId);
+                                      globals.db
+                                          .deleteEtudiant(etudiant.matricule);
+
+                                      String libelle = classe.libelle;
+
+                                      if (classe.effectif == 1) {
+                                        globals.streamController.add(libelle);
+                                      } else {
+                                        globals.streamController.add('');
+                                      }
+                                      showdeletetoast();
+                                    },
+                                  ),
+                                ],
+                              );
+                            });
+                      },
                       splashColor: const Color.fromARGB(80, 229, 56, 53),
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),

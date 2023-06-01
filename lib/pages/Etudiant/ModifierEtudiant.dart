@@ -8,10 +8,8 @@ import 'package:crud_ecole/textinputformatters/DecimalTextInputFormatter.dart';
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class ModifierEtudiant extends StatefulWidget {
-  final Function state;
   final Etudiant chosenEt;
-  const ModifierEtudiant(
-      {super.key, required this.state, required this.chosenEt});
+  const ModifierEtudiant({super.key, required this.chosenEt});
   @override
   // ignore: library_private_types_in_public_api
   _ModifierEtudiantState createState() => _ModifierEtudiantState();
@@ -23,6 +21,8 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
   FocusScopeNode focusScopeNode = FocusScopeNode();
   final FocusNode _dropdownFocusNode = FocusNode();
 
+  Widget toastChild = const Text('');
+
   DateFormat formatter = DateFormat('dd-MM-yyyy');
 
   Map<int, String> classes = {};
@@ -31,6 +31,7 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
 
   final _formKey = GlobalKey<FormState>();
 
+  String chosenmat = '';
   String matricule = '';
   String nom = '';
   String prenom = '';
@@ -70,8 +71,6 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
       ),
     );
     if (picked != null) {
-      // ignore: use_build_context_synchronously
-      FocusScope.of(context).requestFocus(_dropdownFocusNode);
       if (picked != birthdate) {
         birthdate = picked;
         dateController.value = TextEditingValue(text: formatter.format(picked));
@@ -79,8 +78,38 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
     }
   }
 
-  Widget buildToastChild() {
-    return Container(
+  void fillchamps() {
+    chosenmat = widget.chosenEt.matricule;
+    matricule = chosenmat;
+    nom = widget.chosenEt.nom;
+    prenom = widget.chosenEt.prenom;
+    birthdate = DateTime.parse(widget.chosenEt.dateAnniv);
+    classeId = widget.chosenEt.classeId;
+    moyMath = widget.chosenEt.moyMath;
+    moyInfo = widget.chosenEt.moyInfo;
+
+    matriculeController.value = TextEditingValue(text: matricule);
+    nomController.value = TextEditingValue(text: nom);
+    prenomController.value = TextEditingValue(text: prenom);
+    dateController.value = TextEditingValue(text: formatter.format(birthdate));
+    moyMathController.value = TextEditingValue(text: moyMath.toString());
+    moyInfoController.value = TextEditingValue(text: moyInfo.toString());
+  }
+
+  @override
+  void initState() {
+    // Assign data within the initState() method
+    fillchamps();
+
+    fetchMats();
+    fetchClasses();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    fToast.init(context);
+    toastChild = Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
@@ -103,37 +132,6 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
         ],
       ),
     );
-  }
-
-  void fillchamps() {
-    matricule = widget.chosenEt.matricule;
-    nom = widget.chosenEt.nom;
-    prenom = widget.chosenEt.prenom;
-    birthdate = DateTime.parse(widget.chosenEt.dateAnniv);
-    classeId = widget.chosenEt.classeId;
-    moyMath = widget.chosenEt.moyMath;
-    moyInfo = widget.chosenEt.moyInfo;
-
-    matriculeController.value = TextEditingValue(text: matricule);
-    nomController.value = TextEditingValue(text: nom);
-    prenomController.value = TextEditingValue(text: prenom);
-    dateController.value = TextEditingValue(text: formatter.format(birthdate));
-    moyMathController.value = TextEditingValue(text: moyMath.toString());
-    moyInfoController.value = TextEditingValue(text: moyInfo.toString());
-  }
-
-  @override
-  void initState() {
-    // Assign data within the initState() method
-    fillchamps();
-    fetchMats();
-    fetchClasses();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    fToast.init(context);
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -169,7 +167,6 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9A-Z]'))
                             ],
-                            textInputAction: TextInputAction.next,
                             decoration: const InputDecoration(
                               labelText: 'Matricule',
                               border: OutlineInputBorder(),
@@ -223,7 +220,6 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                   RegExp(r'[a-zA-Zéèïë ]')),
                               NameTextInputFormatter(),
                             ],
-                            textInputAction: TextInputAction.next,
                             decoration: const InputDecoration(
                               labelText: 'Prénom',
                               border: OutlineInputBorder(),
@@ -235,7 +231,6 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                             },
                             onFieldSubmitted: (value) async {
                               focusScopeNode.unfocus();
-                              _selectDate(context);
                             },
                             onSaved: (value) {
                               prenom = value!.trim();
@@ -309,7 +304,6 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                           TextFormField(
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
-                            textInputAction: TextInputAction.next,
                             keyboardType: const TextInputType.numberWithOptions(
                                 decimal: true),
                             inputFormatters: [
@@ -416,22 +410,24 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
                                     _formKey.currentState!.save();
-                                    globals.db.updateEtudiant(Etudiant(
-                                        matricule: matricule,
-                                        nom: nom,
-                                        prenom: prenom,
-                                        dateAnniv: DateFormat('yyyy-MM-dd')
-                                            .format(birthdate),
-                                        moyMath: moyMath,
-                                        moyInfo: moyInfo,
-                                        classeId: classeId));
-                                    widget.state;
-                                    fetchMats();
-                                    _formKey.currentState!.reset();
-
+                                    globals.db.updateEtudiant(
+                                        Etudiant(
+                                            matricule: matricule,
+                                            nom: nom,
+                                            prenom: prenom,
+                                            dateAnniv: DateFormat('yyyy-MM-dd')
+                                                .format(birthdate),
+                                            moyMath: moyMath,
+                                            moyInfo: moyInfo,
+                                            classeId: classeId),
+                                        chosenmat);
+                                    chosenmat = matricule;
+                                    fetchMats(); //refresh etudiant page
+                                    globals.streamController.add(
+                                        ''); // L'effectif des classes est mis à jour sur l'autre page
                                     fToast.showToast(
                                       gravity: ToastGravity.TOP,
-                                      child: buildToastChild(),
+                                      child: toastChild,
                                       toastDuration: const Duration(seconds: 2),
                                     );
                                   }

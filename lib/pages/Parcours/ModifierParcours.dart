@@ -6,10 +6,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class ModifierParcours extends StatefulWidget {
-  final Function state;
-  final String chosenLib;
-  const ModifierParcours(
-      {super.key, required this.state, required this.chosenLib});
+  final Parcours chosenPar;
+  const ModifierParcours({super.key, required this.chosenPar});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -21,16 +19,19 @@ class _ModifierParcoursState extends State<ModifierParcours> {
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
+  Widget toastChild = const Text('');
+
   List<String> classes = [];
 
   final _formKey = GlobalKey<FormState>();
 
-  late String libelle;
+  int id = 0;
+  String libelle = '';
 
   TextEditingController libelleController = TextEditingController();
 
   Future<List<String>> fetchdatas() async {
-    final datas = await globals.db.getParcoursLibelleWithout(widget.chosenLib);
+    final datas = await globals.db.getParcoursLibelleWithout(id);
     classes.clear();
     for (var classe in datas) {
       classes.add(classe.toUpperCase());
@@ -38,8 +39,24 @@ class _ModifierParcoursState extends State<ModifierParcours> {
     return classes;
   }
 
-  Widget buildToastChild() {
-    return Container(
+  void fillchamps() {
+    id = widget.chosenPar.id;
+    libelle = widget.chosenPar.libelle;
+    libelleController.value = TextEditingValue(text: libelle);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Assign data within the initState() method
+    fillchamps();
+    fetchdatas();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    fToast.init(context);
+    toastChild = Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
@@ -62,20 +79,6 @@ class _ModifierParcoursState extends State<ModifierParcours> {
         ],
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Assign data within the initState() method
-    fetchdatas();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    fToast.init(context);
-    libelle = widget.chosenLib;
-    libelleController.value = TextEditingValue(text: libelle);
     return GestureDetector(
       onTap: () {
         focusScopeNode.unfocus();
@@ -150,16 +153,13 @@ class _ModifierParcoursState extends State<ModifierParcours> {
                                 if (_formKey.currentState!.validate()) {
                                   FocusManager.instance.primaryFocus?.unfocus();
                                   _formKey.currentState!.save();
-                                  globals.db.insertParcours(
-                                      Parcours(id: 0, libelle: libelle));
-                                  setState(() {
-                                    fetchdatas();
-                                  });
-                                  widget.state;
-                                  _formKey.currentState!.reset();
+                                  globals.db.updateParcours(
+                                      Parcours(id: id, libelle: libelle));
+                                  fetchdatas();
+                                  globals.streamController.add('');
                                   fToast.showToast(
                                     gravity: ToastGravity.TOP,
-                                    child: buildToastChild(),
+                                    child: toastChild,
                                     toastDuration: const Duration(seconds: 2),
                                   );
                                 }

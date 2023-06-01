@@ -1,6 +1,6 @@
 import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:crud_ecole/models/ParcoursFormatted.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart'
     show ConflictAlgorithm, Database, getDatabasesPath, openDatabase;
@@ -32,7 +32,7 @@ class DataBaseCrud {
       $ETUDIANT_COLUMN_MATH REAL NOT NULL, 
       $ETUDIANT_COLUMN_INFO REAL NOT NULL, 
       FOREIGN KEY ($ETUDIANT_COLUMN_CLASSE_ID) REFERENCES 
-      $PARCOURS_TABLE_NAME($CLASSE_COLUMN_CODE), 
+      $PARCOURS_TABLE_NAME($CLASSE_COLUMN_CODE) ON DELETE CASCADE, 
       CONSTRAINT CHK_Notes CHECK ($ETUDIANT_COLUMN_MATH >= 0 AND 
       $ETUDIANT_COLUMN_MATH <= 20 AND $ETUDIANT_COLUMN_INFO >= 0 AND 
       $ETUDIANT_COLUMN_INFO <= 20), 
@@ -168,7 +168,6 @@ WHERE
         where: '$ETUDIANT_COLUMN_MAT NOT LIKE ?',
         whereArgs: [chosen]);
     if (maps != null) {
-      debugPrint(chosen + maps.toString());
       return List.generate(maps.length, (i) {
         return maps[i][ETUDIANT_COLUMN_MAT];
       });
@@ -217,12 +216,12 @@ ON $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_CLASSE_ID = $PARCOURS_TABLE_NAME.$CLASS
     }
   }
 
-  Future<List<String>> getParcoursLibelleWithout(String chosen) async {
+  Future<List<String>> getParcoursLibelleWithout(int chosen) async {
     final List<Map<String, dynamic>>? maps = await db?.query(
         PARCOURS_TABLE_NAME,
         columns: [CLASSE_COLUMN_LIBELLE],
-        where: 'upper($CLASSE_COLUMN_LIBELLE) != ?',
-        whereArgs: [chosen.toUpperCase()]);
+        where: '$CLASSE_COLUMN_CODE != ?',
+        whereArgs: [chosen]);
     if (maps != null) {
       return List.generate(maps.length, (i) {
         return maps[i][CLASSE_COLUMN_LIBELLE];
@@ -255,6 +254,26 @@ GROUP BY $CLASSE_COLUMN_CODE
     }
   }
 
+  Future<ParcoursFormatted> getOneFormattedParcours(int id) async {
+    final List<Map<String, dynamic>>? maps = await db?.rawQuery('''
+SELECT $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_CODE,
+$PARCOURS_TABLE_NAME.$CLASSE_COLUMN_LIBELLE,
+$ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_PRENOM,
+COUNT($ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_MAT) AS effectif
+FROM $PARCOURS_TABLE_NAME LEFT JOIN $ETUDIANT_TABLE_NAME
+ON $ETUDIANT_TABLE_NAME.$ETUDIANT_COLUMN_CLASSE_ID = $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_CODE
+WHERE $CLASSE_COLUMN_CODE = $id
+''');
+    if (maps != null) {
+      return ParcoursFormatted(
+          id: maps[0][CLASSE_COLUMN_CODE],
+          libelle: maps[0][CLASSE_COLUMN_LIBELLE],
+          effectif: maps[0]['effectif']);
+    } else {
+      return ParcoursFormatted(id: 0, libelle: '', effectif: 0);
+    }
+  }
+
   Future<List<ParcoursFormatted>> getFormattedParcoursWithPattern(
       String pattern) async {
     final List<Map<String, dynamic>>? maps = await db?.rawQuery('''
@@ -280,9 +299,10 @@ GROUP BY $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_CODE
     }
   }
 
-  Future<void> updateEtudiant(Etudiant etudiant) async {
+  Future<void> updateEtudiant(Etudiant etudiant, String chosenmat) async {
     await db!.update(ETUDIANT_TABLE_NAME, etudiant.toMap(),
-        where: '$ETUDIANT_COLUMN_MAT = ?', whereArgs: [etudiant.matricule]);
+        where: '$ETUDIANT_COLUMN_MAT = ?', whereArgs: [chosenmat]);
+    debugPrint(etudiant.toMap().toString());
   }
 
   Future<void> updateParcours(Parcours parcours) async {
@@ -290,12 +310,12 @@ GROUP BY $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_CODE
         where: 'id = ?', whereArgs: [parcours.id]);
   }
 
-  Future<void> deleteEtudiant(Etudiant etudiant) async {
+  Future<void> deleteEtudiant(String matricule) async {
     await db!.delete(ETUDIANT_TABLE_NAME,
-        where: '$ETUDIANT_COLUMN_MAT = ?', whereArgs: [etudiant.matricule]);
+        where: '$ETUDIANT_COLUMN_MAT = ?', whereArgs: [matricule]);
   }
 
-  Future<void> deleteParcours(Parcours parcours) async {
+  Future<void> deleteParcours(ParcoursFormatted parcours) async {
     await db!.delete(PARCOURS_TABLE_NAME,
         where: '$CLASSE_COLUMN_CODE = ?', whereArgs: [parcours.id]);
   }

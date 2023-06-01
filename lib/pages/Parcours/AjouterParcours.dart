@@ -6,8 +6,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 
 class AjouterParcours extends StatefulWidget {
-  final Function state;
-  const AjouterParcours({super.key, required this.state});
+  const AjouterParcours({
+    super.key,
+  });
 
   @override
   // ignore: library_private_types_in_public_api
@@ -18,6 +19,8 @@ class _AjouterParcoursState extends State<AjouterParcours> {
   final fToast = FToast();
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
+
+  Widget toastChild = const Text('');
 
   List<String> classes = [];
 
@@ -36,8 +39,17 @@ class _AjouterParcoursState extends State<AjouterParcours> {
     return classes;
   }
 
-  Widget buildToastChild() {
-    return Container(
+  @override
+  void initState() {
+    super.initState();
+    // Assign data within the initState() method
+    fetchdatas();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    fToast.init(context);
+    toastChild = Container(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
@@ -60,18 +72,6 @@ class _AjouterParcoursState extends State<AjouterParcours> {
         ],
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Assign data within the initState() method
-    fetchdatas();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    fToast.init(context);
     return GestureDetector(
       onTap: () {
         focusScopeNode.unfocus();
@@ -148,12 +148,12 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                   _formKey.currentState!.save();
                                   globals.db.insertParcours(
                                       Parcours(id: 0, libelle: libelle));
-                                  widget.state;
+                                  globals.streamController.add('nope');
                                   fetchdatas();
                                   _formKey.currentState!.reset();
                                   fToast.showToast(
                                     gravity: ToastGravity.TOP,
-                                    child: buildToastChild(),
+                                    child: toastChild,
                                     toastDuration: const Duration(seconds: 2),
                                   );
                                 }

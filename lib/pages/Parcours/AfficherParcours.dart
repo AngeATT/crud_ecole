@@ -5,6 +5,7 @@ import 'package:crud_ecole/models/ParcoursFormatted.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'AjouterParcours.dart';
 
@@ -18,19 +19,19 @@ class AfficherParcours extends StatefulWidget {
 
 class _AfficherParcoursState extends State<AfficherParcours>
     with SingleTickerProviderStateMixin {
-  void state() {
-    setState(() {});
-  }
+  final fToast = FToast();
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
+
+  Widget toastChild = const Text('');
 
   late AnimationController _animationController;
   double squareScale = 1;
 
   String searched = '';
 
-  List<ParcoursFormatted> classes = [];
-  List<ParcoursFormatted> searchedclasses = [];
+  List<ParcoursFormatted>? classes;
+  List<ParcoursFormatted>? searchedclasses;
 
   Future<List<ParcoursFormatted>> fetchdatas() async {
     classes = await globals.db.getFormattedParcours();
@@ -40,7 +41,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
       searchedclasses =
           await globals.db.getFormattedParcoursWithPattern(searched);
     }
-    return searchedclasses;
+    return searchedclasses!;
   }
 
   void add() {
@@ -68,13 +69,19 @@ class _AfficherParcoursState extends State<AfficherParcours>
             ),
             SizedBox(
               height: height * 0.8 <= 600 ? height * 0.8 : 600,
-              child: AjouterParcours(
-                state: state,
-              ),
+              child: const AjouterParcours(),
             )
           ],
         );
       },
+    );
+  }
+
+  void showdeletetoast() {
+    fToast.showToast(
+      gravity: ToastGravity.TOP,
+      child: toastChild,
+      toastDuration: const Duration(seconds: 2),
     );
   }
 
@@ -96,8 +103,11 @@ class _AfficherParcoursState extends State<AfficherParcours>
     });
 
     _animationController.drive(CurveTween(curve: Curves.fastOutSlowIn));
+    globals.streamController.stream.listen((event) {
+      fetchdatas();
+      setState(() {});
+    });
     super.initState();
-    setState(() {});
   }
 
   @override
@@ -108,6 +118,31 @@ class _AfficherParcoursState extends State<AfficherParcours>
 
   @override
   Widget build(BuildContext context) {
+    fToast.init(context);
+
+    toastChild = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Theme.of(context).primaryColorLight,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check,
+              color: Theme.of(context).colorScheme.inverseSurface),
+          const SizedBox(
+            width: 12.0,
+          ),
+          Text(
+            "Parcours suprimé",
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.inverseSurface,
+            ),
+          ),
+        ],
+      ),
+    );
     return Scaffold(
       floatingActionButton: GestureDetector(
         behavior: HitTestBehavior.translucent,
@@ -142,14 +177,14 @@ class _AfficherParcoursState extends State<AfficherParcours>
             node: focusScopeNode,
             child: Container(
               alignment: Alignment.center,
-              child: FutureBuilder<List<ParcoursFormatted>>(
+              child: FutureBuilder(
                   future: fetchdatas(),
                   builder: (context, snapshot) {
-                    debugPrint('entered: ' +
-                        snapshot.hasData.toString() +
-                        snapshot.data.toString() +
-                        snapshot.connectionState.toString());
-                    if (classes.isEmpty) {
+                    if (classes == null) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (classes!.isEmpty) {
                       return const Center(
                         child: Text(
                           'Ajoutez des classes pour les voir ici',
@@ -186,9 +221,8 @@ class _AfficherParcoursState extends State<AfficherParcours>
                                     elevation: 5,
                                     child: TextField(
                                       onChanged: (value) {
-                                        setState(() {
-                                          searched = value;
-                                        });
+                                        searched = value;
+                                        setState(() {});
                                       },
                                       textCapitalization:
                                           TextCapitalization.sentences,
@@ -211,61 +245,70 @@ class _AfficherParcoursState extends State<AfficherParcours>
                               ),
                             ),
                           ),
-                          Builder(builder: (context) {
-                            if (searchedclasses.isEmpty) {
-                              return const Expanded(
-                                child: Center(
-                                  child: Text(
-                                    'Aucune correspondance',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w300),
-                                  ),
-                                ),
-                              );
-                            }
-                            return Expanded(
-                              child: ListView.builder(
-                                  keyboardDismissBehavior:
-                                      ScrollViewKeyboardDismissBehavior.onDrag,
-                                  itemCount: searchedclasses.length,
-                                  itemBuilder:
-                                      (BuildContext context, int position) {
-                                    EdgeInsetsGeometry bottompadding;
-                                    if (position ==
-                                        searchedclasses.length - 1) {
-                                      bottompadding =
-                                          const EdgeInsets.only(bottom: 100);
-                                    } else {
-                                      bottompadding = EdgeInsets.zero;
-                                    }
-                                    return Padding(
-                                      padding: const EdgeInsetsDirectional.only(
-                                          start: 16.0, top: 16.0, end: 16.0),
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        child: Container(
-                                          padding: bottompadding,
-                                          constraints: const BoxConstraints(
-                                              maxWidth: 450),
-                                          child: ParcoursCard(
-                                            parcours: ParcoursFormatted(
-                                              id: searchedclasses[position].id,
-                                              libelle: searchedclasses[position]
-                                                  .libelle,
-                                              effectif:
-                                                  searchedclasses[position]
-                                                      .effectif,
-                                            ),
-                                            db: globals.db,
-                                            context: context,
-                                          ),
-                                        ),
+                          FutureBuilder(
+                              future: fetchdatas(),
+                              builder: (context, snapshot) {
+                                if (searchedclasses!.isEmpty) {
+                                  return const Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        'Aucune correspondance',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w300),
                                       ),
-                                    );
-                                  }),
-                            );
-                          }),
+                                    ),
+                                  );
+                                }
+                                return Expanded(
+                                  child: ListView.builder(
+                                      keyboardDismissBehavior:
+                                          ScrollViewKeyboardDismissBehavior
+                                              .onDrag,
+                                      itemCount: searchedclasses!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int position) {
+                                        EdgeInsetsGeometry bottompadding;
+                                        if (position ==
+                                            searchedclasses!.length - 1) {
+                                          bottompadding = const EdgeInsets.only(
+                                              bottom: 100);
+                                        } else {
+                                          bottompadding = EdgeInsets.zero;
+                                        }
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.only(
+                                                  start: 16.0,
+                                                  top: 16.0,
+                                                  end: 16.0),
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            child: Container(
+                                              padding: bottompadding,
+                                              constraints: const BoxConstraints(
+                                                  maxWidth: 450),
+                                              child: ParcoursCard(
+                                                parcours: ParcoursFormatted(
+                                                  id: searchedclasses![position]
+                                                      .id,
+                                                  libelle:
+                                                      searchedclasses![position]
+                                                          .libelle,
+                                                  effectif:
+                                                      searchedclasses![position]
+                                                          .effectif,
+                                                ),
+                                                showdeletetoast:
+                                                    showdeletetoast,
+                                                context: context,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                );
+                              }),
                         ],
                       );
                     }
