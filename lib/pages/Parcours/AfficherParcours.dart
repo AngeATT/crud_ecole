@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:crud_ecole/textinputformatters/NameTextInputFormatter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'AjouterParcours.dart';
 
 class AfficherParcours extends StatefulWidget {
@@ -22,8 +21,6 @@ class _AfficherParcoursState extends State<AfficherParcours>
   final fToast = FToast();
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
-
-  Widget toastChild = const Text('');
 
   late AnimationController _animationController;
   double squareScale = 1;
@@ -62,7 +59,7 @@ class _AfficherParcoursState extends State<AfficherParcours>
                 width: 70,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.black26,
+                  color: Theme.of(context).colorScheme.onBackground,
                   borderRadius: BorderRadius.circular(20),
                 ),
               )),
@@ -74,14 +71,6 @@ class _AfficherParcoursState extends State<AfficherParcours>
           ],
         );
       },
-    );
-  }
-
-  void showdeletetoast() {
-    fToast.showToast(
-      gravity: ToastGravity.TOP,
-      child: toastChild,
-      toastDuration: const Duration(seconds: 2),
     );
   }
 
@@ -104,8 +93,10 @@ class _AfficherParcoursState extends State<AfficherParcours>
 
     _animationController.drive(CurveTween(curve: Curves.fastOutSlowIn));
     globals.streamController.stream.listen((event) {
-      fetchdatas();
-      setState(() {});
+      if (event.from != ' nopepar') {
+        fetchdatas();
+        setState(() {});
+      }
     });
     super.initState();
   }
@@ -113,36 +104,12 @@ class _AfficherParcoursState extends State<AfficherParcours>
   @override
   void dispose() {
     _animationController.dispose();
+    focusScopeNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    fToast.init(context);
-
-    toastChild = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25.0),
-        color: Theme.of(context).primaryColorLight,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.check,
-              color: Theme.of(context).colorScheme.inverseSurface),
-          const SizedBox(
-            width: 12.0,
-          ),
-          Text(
-            "Parcours suprimé",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface,
-            ),
-          ),
-        ],
-      ),
-    );
     return Scaffold(
       floatingActionButton: GestureDetector(
         behavior: HitTestBehavior.translucent,
@@ -163,8 +130,11 @@ class _AfficherParcoursState extends State<AfficherParcours>
         child: Transform.scale(
           scale: squareScale,
           child: FloatingActionButton(
+            backgroundColor: Theme.of(context).colorScheme.surface,
             onPressed: add,
-            child: const Icon(Icons.add),
+            child: const Icon(
+              Icons.add,
+            ),
           ),
         ),
       ),
@@ -299,8 +269,6 @@ class _AfficherParcoursState extends State<AfficherParcours>
                                                       searchedclasses![position]
                                                           .effectif,
                                                 ),
-                                                showdeletetoast:
-                                                    showdeletetoast,
                                                 context: context,
                                               ),
                                             ),

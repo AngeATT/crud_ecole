@@ -1,18 +1,19 @@
+import 'package:crud_ecole/StreamMessage.dart';
 import 'package:crud_ecole/models/ParcoursFormatted.dart';
 import 'package:crud_ecole/pages/Etudiant/ModifierEtudiant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:crud_ecole/models/EtudiantFormatted.dart';
 import 'package:crud_ecole/globals.dart' as globals;
 
 class EtudiantCard extends Card {
-  EtudiantCard(
-      {super.key,
-      required EtudiantFormatted etudiant,
-      required BuildContext context,
-      required Function showdeletetoast})
-      : super(
+  EtudiantCard({
+    super.key,
+    required EtudiantFormatted etudiant,
+    required BuildContext context,
+  }) : super(
           color: Theme.of(context).colorScheme.onPrimary,
           shadowColor: Theme.of(context).primaryColorLight,
           elevation: 5.0,
@@ -128,7 +129,9 @@ class EtudiantCard extends Card {
                                     width: 70,
                                     height: 5,
                                     decoration: BoxDecoration(
-                                      color: Colors.black26,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onBackground,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                   )),
@@ -196,11 +199,50 @@ class EtudiantCard extends Card {
                                       String libelle = classe.libelle;
 
                                       if (classe.effectif == 1) {
-                                        globals.streamController.add(libelle);
+                                        globals.streamController.add(
+                                            StreamMessage(
+                                                from: libelle, to: ''));
                                       } else {
-                                        globals.streamController.add('');
+                                        globals.streamController.add(
+                                            const StreamMessage(
+                                                from: '', to: ''));
                                       }
-                                      showdeletetoast();
+                                      final fToast = FToast();
+                                      // ignore: use_build_context_synchronously
+                                      fToast.init(context);
+                                      fToast.showToast(
+                                        gravity: ToastGravity.TOP,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 24.0, vertical: 12.0),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(25.0),
+                                            // ignore: use_build_context_synchronously
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .background,
+                                          ),
+                                          child: const Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(Icons.check,
+                                                  color: Colors.black87),
+                                              SizedBox(
+                                                width: 12.0,
+                                              ),
+                                              Text(
+                                                "Etudiant supprimé",
+                                                style: TextStyle(
+                                                  color: Colors.black87,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        toastDuration:
+                                            const Duration(seconds: 2),
+                                      );
                                     },
                                   ),
                                 ],

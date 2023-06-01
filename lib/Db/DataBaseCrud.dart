@@ -1,6 +1,5 @@
 import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:crud_ecole/models/ParcoursFormatted.dart';
-import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart'
     show ConflictAlgorithm, Database, getDatabasesPath, openDatabase;
@@ -302,7 +301,6 @@ GROUP BY $PARCOURS_TABLE_NAME.$CLASSE_COLUMN_CODE
   Future<void> updateEtudiant(Etudiant etudiant, String chosenmat) async {
     await db!.update(ETUDIANT_TABLE_NAME, etudiant.toMap(),
         where: '$ETUDIANT_COLUMN_MAT = ?', whereArgs: [chosenmat]);
-    debugPrint(etudiant.toMap().toString());
   }
 
   Future<void> updateParcours(Parcours parcours) async {

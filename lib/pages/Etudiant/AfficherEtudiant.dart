@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:crud_ecole/globals.dart' as globals;
 import 'package:crud_ecole/customwidgets/EtudiantCard.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class AfficherEtudiant extends StatefulWidget {
   const AfficherEtudiant({super.key});
@@ -16,12 +15,9 @@ class AfficherEtudiant extends StatefulWidget {
 }
 
 class _AfficherEtudiantState extends State<AfficherEtudiant>
-    with SingleTickerProviderStateMixin {
-  final fToast = FToast();
-
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   FocusScopeNode focusScopeNode = FocusScopeNode();
-
-  Widget toastChild = const Text('');
+  Key dropdownKey = UniqueKey();
 
   late AnimationController _animationController;
   double squareScale = 1;
@@ -41,7 +37,6 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
       searchedetudiants = await globals.db
           .getFormattedEtudiantsWithPattern(searched, chosenclass);
     }
-    setState(() {});
     return searchedetudiants!;
   }
 
@@ -49,14 +44,6 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
     classes = await globals.db.getNotEmptyParcoursLibelle();
     classes!.insert(0, 'Tout');
     return classes!;
-  }
-
-  void showdeletetoast() {
-    fToast.showToast(
-      gravity: ToastGravity.TOP,
-      child: toastChild,
-      toastDuration: const Duration(seconds: 2),
-    );
   }
 
   @override
@@ -80,25 +67,37 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
     });
 
     _animationController.drive(CurveTween(curve: Curves.fastOutSlowIn));
-    globals.streamController.stream.listen((event) {
+    globals.streamController.stream.listen((event) async {
       {
-        if (event != 'nope') {
-          if (event == chosenclass) {
+        if (event.from != ' nopeet') {
+          if (event.from == chosenclass && event.to != '') {
+            chosenclass = event.to;
+          } else {
             chosenclass = 'Tout';
           }
+          await fetchclasses();
           fetchdatas();
-          fetchclasses();
           setState(() {});
         }
       }
     });
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     _animationController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    focusScopeNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    setState(() {
+      dropdownKey = UniqueKey();
+    });
   }
 
   void add() {
@@ -119,7 +118,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                 width: 70,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.black26,
+                  color: Theme.of(context).colorScheme.onBackground,
                   borderRadius: BorderRadius.circular(20),
                 ),
               )),
@@ -136,31 +135,6 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
 
   @override
   Widget build(BuildContext context) {
-    fToast.init(context);
-
-    toastChild = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25.0),
-        color: Theme.of(context).primaryColorLight,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.check,
-              color: Theme.of(context).colorScheme.inverseSurface),
-          const SizedBox(
-            width: 12.0,
-          ),
-          Text(
-            "Etudiant suprimé",
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface,
-            ),
-          ),
-        ],
-      ),
-    );
     return SafeArea(
       child: Scaffold(
         floatingActionButton: GestureDetector(
@@ -183,6 +157,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
             scale: squareScale,
             child: FloatingActionButton(
               onPressed: add,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               child: const Icon(Icons.add),
             ),
           ),
@@ -243,6 +218,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                           child: TextField(
                                             onChanged: (value) {
                                               searched = value;
+                                              setState(() {});
                                             },
                                             textCapitalization:
                                                 TextCapitalization.characters,
@@ -283,6 +259,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                                       .primaryColorLight,
                                                   child:
                                                       DropdownButtonFormField(
+                                                    key: dropdownKey,
                                                     value: chosenclass,
                                                     autovalidateMode:
                                                         AutovalidateMode
@@ -306,6 +283,7 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                                     }).toList(),
                                                     onChanged: (value) {
                                                       chosenclass = value!;
+                                                      setState(() {});
                                                     },
                                                     decoration:
                                                         const InputDecoration(
@@ -390,7 +368,6 @@ class _AfficherEtudiantState extends State<AfficherEtudiant>
                                                       .classeId,
                                             ),
                                             context: context,
-                                            showdeletetoast: showdeletetoast,
                                           ),
                                         ),
                                       ),

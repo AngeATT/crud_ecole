@@ -1,3 +1,4 @@
+import 'package:crud_ecole/StreamMessage.dart';
 import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +15,10 @@ class AjouterEtudiant extends StatefulWidget {
   _AjouterEtudiantState createState() => _AjouterEtudiantState();
 }
 
-class _AjouterEtudiantState extends State<AjouterEtudiant> {
+class _AjouterEtudiantState extends State<AjouterEtudiant>
+    with WidgetsBindingObserver {
+  bool dropdownEntered = false;
+
   final fToast = FToast();
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
@@ -76,11 +80,28 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
   }
 
   @override
+  Future<void> didChangePlatformBrightness() async {
+    if (dropdownEntered && !_dropdownFocusNode.hasFocus) {
+      Navigator.of(context).pop();
+      dropdownEntered = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _dropdownFocusNode.dispose();
+    focusScopeNode.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     // Assign data within the initState() method
     fetchMats();
     fetchClasses();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -90,20 +111,19 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
-        color: Theme.of(context).primaryColorLight,
+        color: Theme.of(context).colorScheme.background,
       ),
-      child: Row(
+      child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check,
-              color: Theme.of(context).colorScheme.inverseSurface),
-          const SizedBox(
+          Icon(Icons.check, color: Colors.black87),
+          SizedBox(
             width: 12.0,
           ),
           Text(
             "Etudiant ajouté",
             style: TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface,
+              color: Colors.black87,
             ),
           ),
         ],
@@ -114,6 +134,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: GestureDetector(
         onTap: () {
+          dropdownEntered = false;
           focusScopeNode.unfocus();
         },
         child: FocusScope(
@@ -246,11 +267,14 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                               future: fetchClasses(),
                               builder: (context, snapshot) {
                                 return DropdownButtonFormField(
+                                  onTap: () => dropdownEntered = true,
                                   focusNode: _dropdownFocusNode,
                                   enableFeedback: true,
                                   iconEnabledColor:
                                       Theme.of(context).primaryColor,
                                   menuMaxHeight: 220,
+                                  iconDisabledColor:
+                                      Theme.of(context).colorScheme.tertiary,
                                   autovalidateMode:
                                       AutovalidateMode.onUserInteraction,
                                   items: classes.entries
@@ -261,6 +285,7 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     );
                                   }).toList(),
                                   onChanged: (value) {
+                                    dropdownEntered = false;
                                     classe = value!;
                                   },
                                   decoration: const InputDecoration(
@@ -394,7 +419,8 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                         moyMath: moyMath,
                                         moyInfo: moyInfo,
                                         classeId: classe));
-                                    globals.streamController.add('');
+                                    globals.streamController.add(
+                                        const StreamMessage(from: '', to: ''));
                                     fetchMats();
                                     _formKey.currentState!.reset();
 
@@ -405,7 +431,10 @@ class _AjouterEtudiantState extends State<AjouterEtudiant> {
                                     );
                                   }
                                 },
-                                child: const Text('Valider'),
+                                child: const Text(
+                                  'Valider',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
                           ),

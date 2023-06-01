@@ -45,7 +45,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           )),
       bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(hoverColor: Colors.transparent),
+        data: Theme.of(context).copyWith(
+          hoverColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
         child: BottomNavigationBar(
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(

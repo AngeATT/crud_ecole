@@ -1,3 +1,4 @@
+import 'package:crud_ecole/StreamMessage.dart';
 import 'package:crud_ecole/globals.dart' as globals;
 import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,12 @@ class _AjouterParcoursState extends State<AjouterParcours> {
   }
 
   @override
+  void dispose() {
+    focusScopeNode.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     // Assign data within the initState() method
@@ -53,20 +60,19 @@ class _AjouterParcoursState extends State<AjouterParcours> {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
-        color: Theme.of(context).primaryColorLight,
+        color: Theme.of(context).colorScheme.background,
       ),
-      child: Row(
+      child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check,
-              color: Theme.of(context).colorScheme.inverseSurface),
-          const SizedBox(
+          Icon(Icons.check, color: Colors.black87),
+          SizedBox(
             width: 12.0,
           ),
           Text(
-            "Classe ajoutée",
+            "classe ajoutée",
             style: TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface,
+              color: Colors.black87,
             ),
           ),
         ],
@@ -148,7 +154,9 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                   _formKey.currentState!.save();
                                   globals.db.insertParcours(
                                       Parcours(id: 0, libelle: libelle));
-                                  globals.streamController.add('nope');
+                                  globals.streamController.add(
+                                      const StreamMessage(
+                                          from: ' nopeet', to: ''));
                                   fetchdatas();
                                   _formKey.currentState!.reset();
                                   fToast.showToast(
@@ -158,7 +166,10 @@ class _AjouterParcoursState extends State<AjouterParcours> {
                                   );
                                 }
                               },
-                              child: const Text('Valider'),
+                              child: const Text(
+                                'Valider',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                         ),

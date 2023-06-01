@@ -1,3 +1,4 @@
+import 'package:crud_ecole/StreamMessage.dart';
 import 'package:crud_ecole/models/Etudiant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -97,6 +98,13 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
   }
 
   @override
+  void dispose() {
+    _dropdownFocusNode.dispose();
+    focusScopeNode.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     // Assign data within the initState() method
     fillchamps();
@@ -113,20 +121,19 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
-        color: Theme.of(context).primaryColorLight,
+        color: Theme.of(context).colorScheme.background,
       ),
-      child: Row(
+      child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check,
-              color: Theme.of(context).colorScheme.inverseSurface),
-          const SizedBox(
+          Icon(Icons.check, color: Colors.black87),
+          SizedBox(
             width: 12.0,
           ),
           Text(
             "Etudiant modifié",
             style: TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface,
+              color: Colors.black87,
             ),
           ),
         ],
@@ -422,9 +429,17 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                             classeId: classeId),
                                         chosenmat);
                                     chosenmat = matricule;
-                                    fetchMats(); //refresh etudiant page
-                                    globals.streamController.add(
-                                        ''); // L'effectif des classes est mis à jour sur l'autre page
+                                    fetchMats();
+
+                                    if (classeId == widget.chosenEt.classeId) {
+                                      globals.streamController.add(
+                                          const StreamMessage(
+                                              from: ' nopepar', to: ''));
+                                    } else {
+                                      globals.streamController.add(
+                                          const StreamMessage(
+                                              from: '', to: ''));
+                                    } //refresh etudiant page
                                     fToast.showToast(
                                       gravity: ToastGravity.TOP,
                                       child: toastChild,
@@ -432,7 +447,10 @@ class _ModifierEtudiantState extends State<ModifierEtudiant> {
                                     );
                                   }
                                 },
-                                child: const Text('Valider'),
+                                child: const Text(
+                                  'Valider',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
                           ),

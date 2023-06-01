@@ -1,3 +1,4 @@
+import 'package:crud_ecole/StreamMessage.dart';
 import 'package:crud_ecole/globals.dart' as globals;
 import 'package:crud_ecole/models/Parcours.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,12 @@ class _ModifierParcoursState extends State<ModifierParcours> {
   }
 
   @override
+  void dispose() {
+    focusScopeNode.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     // Assign data within the initState() method
@@ -60,20 +67,19 @@ class _ModifierParcoursState extends State<ModifierParcours> {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
-        color: Theme.of(context).primaryColorLight,
+        color: Theme.of(context).colorScheme.background,
       ),
-      child: Row(
+      child: const Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check,
-              color: Theme.of(context).colorScheme.inverseSurface),
-          const SizedBox(
+          Icon(Icons.check, color: Colors.black87),
+          SizedBox(
             width: 12.0,
           ),
           Text(
-            "Classe modifiée",
+            "classe modifiée",
             style: TextStyle(
-              color: Theme.of(context).colorScheme.inverseSurface,
+              color: Colors.black87,
             ),
           ),
         ],
@@ -156,7 +162,16 @@ class _ModifierParcoursState extends State<ModifierParcours> {
                                   globals.db.updateParcours(
                                       Parcours(id: id, libelle: libelle));
                                   fetchdatas();
-                                  globals.streamController.add('');
+                                  String ancien = widget.chosenPar.libelle;
+                                  if (libelle == ancien) {
+                                    globals.streamController.add(
+                                        const StreamMessage(
+                                            from: 'nopeet', to: ''));
+                                  } else {
+                                    globals.streamController.add(StreamMessage(
+                                        from: ancien, to: libelle));
+                                  }
+
                                   fToast.showToast(
                                     gravity: ToastGravity.TOP,
                                     child: toastChild,
@@ -164,7 +179,10 @@ class _ModifierParcoursState extends State<ModifierParcours> {
                                   );
                                 }
                               },
-                              child: const Text('Valider'),
+                              child: const Text(
+                                'Valider',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                         ),
